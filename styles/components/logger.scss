@@ -1,0 +1,64 @@
+#logs {
+    width: 300px;
+    height: 50vh;
+    float: right;
+    margin: 10px;
+    position: absolute;
+    right: 10px;
+    overflow: scroll;
+    
+    #logs-container {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+
+        .log {
+            display: flex;
+            font: 300 12px sans-serif;
+            padding: 4px;
+            margin: 2px 0;
+            border: solid grey 1px;
+            background: aliceblue;
+        
+            &.level-warn {
+                border-color: darkgoldenrod;
+                background-color: goldenrod;
+            }
+        
+            &.level-error {
+                border-color: crimson;
+                background-color: tomato;
+            }
+        
+            &.level-fatal {
+                border-color: darkorchid;
+                background-color: orchid;
+            }
+
+            .log-content {
+                flex-grow: 1;
+            }
+
+            .log-close {
+                opacity: 0;
+                color: darkgray;
+                cursor: pointer;
+
+                &:before {
+                    content: "✖️";
+                }
+
+                &:hover {
+                    opacity: 1;
+                    transition: opacity 200ms ease-in-out;
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+

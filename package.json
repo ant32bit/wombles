@@ -1,0 +1,33 @@
+{
+  "name": "wombles",
+  "version": "1.0.0",
+  "description": "Watch the wombles take over the world",
+  "main": "dist/main.js",
+  "scripts": {
+    "clean": "rm -rf build dist",
+    "transpile-js": "tsc && webpack",
+    "transpile-css": "sass styles/main.scss build/styles/main.css",
+    "transpile": "npm run transpile-js && npm run transpile-css",
+    "publish": "mkdir dist && cp -rf build/src/* dist && cp -rf build/bundles/* dist && cp -rf build/styles/*.css dist && cp -rf assets/* dist",
+    "test": "mocha build/test/**/*.js",
+    "execute": "electron dist/main.js",
+    "build": "npm run clean && npm run transpile && npm run publish && npm run test",
+    "start": "npm run build && npm run execute"
+  },
+  "author": "ant32bit",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.3.16",
+    "@types/mocha": "^10.0.7",
+    "chai": "^5.1.1",
+    "electron": "^31.0.2",
+    "mocha": "^10.4.0",
+    "sass": "^1.77.6",
+    "typescript": "^5.5.2",
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "path-browserify": "^1.0.1"
+  }
+}
