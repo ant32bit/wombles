@@ -1,5 +1,5 @@
 import { ILogger, Logger, Viewport } from "../engine";
-import { IDeviceSettings, IElementProvider } from "../models";
+import { IDeviceSettings, IElementProvider } from "../models/descriptors";
 
 export class ElectronRenderProcess {
     public viewport: Viewport | null = null;

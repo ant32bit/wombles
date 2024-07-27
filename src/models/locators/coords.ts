@@ -1,10 +1,7 @@
+import { VectorXY } from "../vector-xy";
 import { Rect } from "./rect";
 
-export class Coords {
-
-    constructor(public x: number, public y: number) {
-        
-    }
+export class Coords extends VectorXY {
 
     distance(from: Coords): number {
         return Math.sqrt(Math.pow(from.x - this.x, 2) + Math.pow(from.y - this.y, 2));

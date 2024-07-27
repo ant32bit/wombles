@@ -1,4 +1,4 @@
-import { IElementProvider } from "../models";
+import { IElementProvider } from "../models/descriptors";
 
 export enum LogLevel {
     trace = 1,

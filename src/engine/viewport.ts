@@ -1,4 +1,4 @@
-import { IDeviceSettings, IElementProvider } from "../models";
+import { IDeviceSettings, IElementProvider } from "../models/descriptors";
 import { Rect } from "../models/locators";
 
 export class Viewport {
