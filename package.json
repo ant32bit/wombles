@@ -1,33 +1,30 @@
 {
   "name": "wombles",
   "version": "1.0.0",
-  "description": "Watch the wombles take over the world",
-  "main": "dist/main.js",
+  "description": "",
+  "main": "./dist/transpiled/src/main.js",
+  "directories": {
+    "test": "./dist/transpiled/test"
+  },
   "scripts": {
-    "clean": "rm -rf build dist",
-    "transpile-js": "tsc && webpack",
-    "transpile-css": "sass styles/main.scss build/styles/main.css",
-    "transpile": "npm run transpile-js && npm run transpile-css",
-    "publish": "mkdir dist && cp -rf build/src/* dist && cp -rf build/bundles/* dist && cp -rf build/styles/*.css dist && cp -rf assets/* dist",
-    "test": "mocha build/test/**/*.js",
-    "execute": "electron dist/main.js",
-    "build": "npm run clean && npm run transpile && npm run publish && npm run test",
-    "start": "npm run build && npm run execute"
+    "test": "mocha dist/transpiled/test/**/*.js",
+    "build": "rm -rf dist && tsc && webpack && python3 integrate.py && npm run test",
+    "serve": "python3 -m http.server --directory dist/www-root 4600"
   },
-  "author": "ant32bit",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "devDependencies": {
-    "@types/chai": "^4.3.16",
-    "@types/mocha": "^10.0.7",
-    "chai": "^5.1.1",
-    "electron": "^31.0.2",
-    "mocha": "^10.4.0",
-    "sass": "^1.77.6",
-    "typescript": "^5.5.2",
-    "webpack": "^5.92.1",
-    "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "path-browserify": "^1.0.1"
+    "@types/chai": "^5.2.3",
+    "@types/jsdom": "^28.0.3",
+    "@types/mocha": "^10.0.10",
+    "@types/sinon": "^21.0.1",
+    "chai": "^6.2.2",
+    "jsdom": "^29.1.1",
+    "mocha": "^11.7.6",
+    "sinon": "^22.0.0",
+    "typescript": "^6.0.3",
+    "webpack": "^5.107.2",
+    "webpack-cli": "^7.0.3"
   }
 }
