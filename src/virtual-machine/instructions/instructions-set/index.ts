@@ -16,6 +16,10 @@ export { ExecuteInterruptInstruction } from "./exi"
 export { BeginInterruptInstruction } from "./bei";
 export { EndOfInterruptInstruction } from "./eoi";
 
+// Instruction Pointer Operations
+export { GetInstructionPointerInstruction } from "./gip";
+export { SetInstructionPointerInstruction } from "./sip";
+
 // Stack Operations
 export { StackPushInstruction } from "./psh";
 export { StackPopInstruction } from "./pop";
@@ -24,6 +28,7 @@ export { StackPopInstruction } from "./pop";
 export { LoadFromMemoryInstruction } from "./lfm";
 export { StoreToMemoryInstruction } from "./stm";
 export { CopyMemoryInstruction } from "./cpm";
+export { IncrementMemoryPointerInstruction } from "./imp";
 export { ImmediateSetMemoryInstruction } from "./ism";
 
 // Ternary Operations
