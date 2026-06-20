@@ -1,3 +1,6 @@
+import { HeapAllocation } from "./heap-allocation";
+import { ProcessAllocation } from "./process-allocation";
+
 export interface IProcessDefinition {
     processId: number;
     address: number;
@@ -16,9 +19,10 @@ export class RandomAccessMemory {
     private memoryIndexBits: number;
 
     private frames: Uint32Array;
-    private heaps: Heap[];
-    private processes: IProcessAllocation[];
-    private nextProcessId;
+    private heaps: HeapAllocation[];
+    private processes: ProcessAllocation[];
+
+    private nextProcessId: number = 2;
 
     constructor(memoryIndexBits: number, frameIndexBits: number) {
         if (memoryIndexBits + frameIndexBits > 31) {
@@ -47,7 +51,6 @@ export class RandomAccessMemory {
 
         this.heaps = [];
         this.processes = [];
-        this.nextProcessId = 2;
     }
 
     public readNumber(pointer: number, size: number): number {
@@ -81,15 +84,7 @@ export class RandomAccessMemory {
     public createProcess(parentPId: number): IProcessDefinition | null {
         try {
             const address = this.allocateFrame();
-            const allocation = {
-                parentPId,
-                address,
-
-                processId: this.nextProcessId++,
-
-                running: false,
-                killed: false,
-            };
+            const allocation = new ProcessAllocation(this.nextProcessId++, parentPId, address);
 
             this.processes.push(allocation);
             return {
@@ -106,28 +101,20 @@ export class RandomAccessMemory {
         const index = this.processes.findIndex(allocation => allocation.processId == processId);
         if (index < 0) return;
 
-        const allocation = this.processes[index];
-
-        if (allocation.parentPId != ownerId) return;
-        if (allocation.killed) return;
-
-        allocation.running = true;
+        const process = this.processes[index];
+        process.start(ownerId);
     }
 
     public killProcess(processId: number): void {
         const index = this.processes.findIndex(allocation => allocation.processId == processId);
         if (index < 0) return;
 
-        const allocation = this.processes[index];
-
-        if (!allocation.running) return;
-
-        allocation.running = false;
-        allocation.killed = true;
+        const process = this.processes[index];
+        process.kill();
 
         const unstartedChildren = this.processes
             .filter(child => child.parentPId == processId && child.running == false)
-            .forEach(child => child.killed = true);
+            .forEach(child => child.kill(true));
     }
 
     public getRunningProcesses(): IProcessDefinition[] {
@@ -139,7 +126,55 @@ export class RandomAccessMemory {
             }));
     }
 
-    private allocateFrame(): number {
+    public reserveHeap(ownerId: number, size: number): number | null {
+        for(let i = 0; i < this.heaps.length; i++) {
+            const address = this.heaps[i].reserve(ownerId, size);
+            if (address != null) {
+                return address;
+            }
+        }
+
+        try {
+            const heapFrame = this.allocateFrame();
+            const heap = new HeapAllocation(heapFrame, this.frameSize);
+            const address = heap.reserve(ownerId, size);
+            this.heaps.push(heap);
+            return address;
+        }
+        catch {
+            return null;
+        }
+    }
+
+    public freeHeap(ownerId: number, address: number): void {
+        for(const heap of this.heaps) {
+            if (heap.unreserve(ownerId, address))
+                break;
+        }
+
+
+    }
+
+    public dump(): { frames: string, processes: [number, string][], heaps: [number, number, number][][] } {
+        const frameClusters = Array
+            .from(this.frames, c => c.toString(2).padStart(32, '0'))
+
+        const last = this.numberOfFrames % 32;
+        if (last > 0)
+            frameClusters[frameClusters.length - 1] = frameClusters[frameClusters.length - 1].substring(32 - last);
+
+        const frames: string = frameClusters.join('');
+        const processes = this.processes.map(p => p.dump());
+        const heaps = this.heaps.map(h => h.dump());
+
+        return { frames, processes, heaps }
+    }
+
+    private allocateFrame(collect: boolean = false): number {
+
+        if (collect)
+            this.collect();
+
         let frameClusterId: number = 0;
         let availableFrameId: number = 0;
 
@@ -153,12 +188,14 @@ export class RandomAccessMemory {
 
         const frameId = frameClusterId * 32 + availableFrameId;
 
-        if (frameId >= this.numberOfFrames)
+        if (frameId >= this.numberOfFrames) {
+            if (!collect)
+                return this.allocateFrame(true);
             throw new OutOfMemoryError();
+        }
 
         this.frames[frameClusterId] &= ~(1 << availableFrameId) >>> 0;
         const address = 0x80000000 | (frameId << this.frameIndexBits);
-
         return address;
     }
 
@@ -175,41 +212,16 @@ export class RandomAccessMemory {
         this.frames[frameClusterId] |= unallocateMask;
     }
 
-    public dump(): { frames: string, processes: [number, string][], heaps: [number, [number, number], boolean][][] } {
-        const frameClusters = Array
-            .from(this.frames, c => c.toString(2).padStart(32, '0'))
-
-        const last = this.numberOfFrames % 32;
-        if (last > 0)
-            frameClusters[frameClusters.length - 1] = frameClusters[frameClusters.length - 1].substring(last);
-
-        const frames: string = frameClusters.join('');
-
-        const processes: [number, string][] = this.processes.map(p => [
-            p.processId,
-            p.killed ? 'killed' : p.running ? 'running' : 'init']);
-
-        const heaps: [number, [number, number], boolean][][] = this.heaps.map(h => h.reservations.map(r => [
-            r.ownerId,
-            [r.bounds[0], r.bounds[1]],
-            r.freed]));
-
-        return { frames, processes, heaps }
-    }
-
     private collect(): void {
         const killedProcesses = this.processes.filter(allocation => allocation.killed);
         for(const killedProcess of killedProcesses) {
             this.freeFrame(killedProcess.address);
-            this.heaps.forEach(heap => heap.freeByProcess(killedProcess.processId));
+            this.heaps.forEach(heap => heap.unreserveAll(killedProcess.processId));
         }
 
         this.processes = this.processes.filter(allocation => !allocation.killed);
-        this.heaps.forEach(heap => heap.collect());
-
-        const unusedHeaps = this.heaps.filter(heap => heap.reservations.length == 0);
-        this.heaps = this.heaps.filter(heap => heap.reservations.length > 0);
-
+        const unusedHeaps = this.heaps.filter(heap => !heap.hasReservations());
+        this.heaps = this.heaps.filter(heap => heap.hasReservations());
         unusedHeaps.forEach(heap => this.freeFrame(heap.address));
     }
 
@@ -227,34 +239,4 @@ export class RandomAccessMemory {
 
 class OutOfMemoryError extends Error {
     constructor() { super("out of memory"); }
-}
-
-class Heap {
-
-    public address: number;
-    public reservations: { ownerId: number, bounds: [number, number], freed: boolean }[];
-
-    constructor(address: number) {
-        this.address = address;
-        this.reservations = [];
-    }
-
-    public freeByProcess(processId: number): void {
-        this.reservations
-            .filter(reservation => reservation.ownerId == processId)
-            .forEach(reservation => reservation.freed = true);
-    }
-
-    public collect(): void {
-        this.reservations = this.reservations.filter(reservation => !reservation.freed);
-    }
-}
-
-interface IProcessAllocation {
-
-    processId: number;
-    parentPId: number;
-    running: boolean;
-    killed: boolean;
-    address: number;
 }

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { RandomAccessMemory } from "../../../src/virtual-machine/memory";
 
-describe("process memory allocation", () => {
+describe("process allocation", () => {
 
     it ('can allocate a process', () => {
         const memory = new RandomAccessMemory(4, 4);
@@ -66,4 +66,3 @@ describe("process memory allocation", () => {
         expect(dump.processes[0][1]).to.equal('init');
     });
 });
-
