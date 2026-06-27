@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, LogicalNotInstruction } from ".
 describe("not instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x6448;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(LogicalNotInstruction);
@@ -14,8 +13,7 @@ describe("not instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('not $1, $2');
+        const actual = InstructionEncoder.encode('not $1, $2');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(LogicalNotInstruction);

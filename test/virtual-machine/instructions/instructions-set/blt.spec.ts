@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BranchLessThanInstruction } fro
 describe("blt instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x944B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BranchLessThanInstruction);
@@ -14,8 +13,7 @@ describe("blt instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('blt $1, $2, $3');
+        const actual = InstructionEncoder.encode('blt $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BranchLessThanInstruction);

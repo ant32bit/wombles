@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, ImmediateSetRegisterInstruction
 describe("set instruction", () => {
     it("can be decoded", () => {
         const instruction = 0xC68B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(ImmediateSetRegisterInstruction);
@@ -14,8 +13,7 @@ describe("set instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('set $1[2], 139');
+        const actual = InstructionEncoder.encode('set $1[2], 139');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(ImmediateSetRegisterInstruction);

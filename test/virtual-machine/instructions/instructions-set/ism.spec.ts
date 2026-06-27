@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, ImmediateSetMemoryInstruction }
 describe("ism instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x318B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(ImmediateSetMemoryInstruction);
@@ -14,8 +13,7 @@ describe("ism instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('ism $1, 139');
+        const actual = InstructionEncoder.encode('ism $1, 139');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(ImmediateSetMemoryInstruction);

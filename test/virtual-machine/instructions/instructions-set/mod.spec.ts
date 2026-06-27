@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, ModulusInstruction } from "../.
 describe("mod instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x544B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(ModulusInstruction);
@@ -14,8 +13,7 @@ describe("mod instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('mod $1, $2, $3');
+        const actual = InstructionEncoder.encode('mod $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(ModulusInstruction);

@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -30,4 +32,7 @@ export class TestEqualInstruction implements IInstruction {
         const args = [this._rhsRegister, this._lhsRegister, this._destinationRegister]
         return pack(TestEqualInstruction.HEAD, TestEqualInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

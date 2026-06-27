@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, EndOfInterruptInstruction } fro
 describe("eoi instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x0296;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(EndOfInterruptInstruction);
@@ -14,8 +13,7 @@ describe("eoi instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('eoi 6');
+        const actual = InstructionEncoder.encode('eoi 6');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(EndOfInterruptInstruction);

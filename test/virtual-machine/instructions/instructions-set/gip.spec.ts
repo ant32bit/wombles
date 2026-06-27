@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, GetInstructionPointerInstructio
 describe("gip instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x02C1;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(GetInstructionPointerInstruction);
@@ -14,8 +13,7 @@ describe("gip instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('gip $1');
+        const actual = InstructionEncoder.encode('gip $1');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(GetInstructionPointerInstruction);

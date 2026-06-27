@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -25,5 +27,9 @@ export class BeginInterruptInstruction implements IInstruction {
     public encode(): number {
         const args = [this._interruptCode]
         return pack(BeginInterruptInstruction.HEAD, BeginInterruptInstruction.PACK, args);
+    }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        // does nothing during eval.
     }
 }

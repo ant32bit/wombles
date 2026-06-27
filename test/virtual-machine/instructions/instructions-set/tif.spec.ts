@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, TestIfFalseInstruction } from "
 describe("tif instruction", () => {
     it("can be decoded", () => {
         const instruction = 0xBC48;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(TestIfFalseInstruction);
@@ -14,8 +13,7 @@ describe("tif instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('tif $1, $2');
+        const actual = InstructionEncoder.encode('tif $1, $2');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(TestIfFalseInstruction);

@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, StackPopInstruction } from "../
 describe("pop instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x02F1;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(StackPopInstruction);
@@ -14,8 +13,7 @@ describe("pop instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('pop $1');
+        const actual = InstructionEncoder.encode('pop $1');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(StackPopInstruction);

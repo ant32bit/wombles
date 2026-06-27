@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -27,5 +29,14 @@ export class BinaryNotInstruction implements IInstruction {
     public encode(): number {
         const args = [this._sourceRegister, this._destinationRegister, 0]
         return pack(BinaryNotInstruction.HEAD, BinaryNotInstruction.PACK, args);
+    }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const srcResolver = process.getRegisterResolver(RegisterType.Data, this._sourceRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const src = srcResolver.resolveGet(memory) >>> 0;
+
+        destResolver.resolveSet(memory, (~src) >>> 0);
     }
 }

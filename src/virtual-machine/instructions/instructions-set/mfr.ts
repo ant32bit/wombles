@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -26,4 +28,7 @@ export class MemoryFreeInstruction implements IInstruction {
         const args = [0, this._pointerRegister]
         return pack(MemoryFreeInstruction.HEAD, MemoryFreeInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

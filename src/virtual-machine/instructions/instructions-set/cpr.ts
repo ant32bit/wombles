@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -28,4 +30,7 @@ export class CopyRegisterInstruction implements IInstruction {
         const args = [this._sourcePointerRegister, this._destinationPointerRegister, 0]
         return pack(CopyRegisterInstruction.HEAD, CopyRegisterInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

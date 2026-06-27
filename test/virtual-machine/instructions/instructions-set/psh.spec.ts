@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, StackPushInstruction } from "..
 describe("psh instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x02E1;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(StackPushInstruction);
@@ -14,8 +13,7 @@ describe("psh instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('psh $1');
+        const actual = InstructionEncoder.encode('psh $1');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(StackPushInstruction);

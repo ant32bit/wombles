@@ -6,7 +6,7 @@ describe("process allocation", () => {
     it ('can allocate a process', () => {
         const memory = new RandomAccessMemory(4, 4);
 
-        const processDef = memory.createProcess(1);
+        const processDef = memory.allocProcess(1);
 
         const dump = memory.dump();
 
@@ -14,55 +14,44 @@ describe("process allocation", () => {
         expect(processDef!.address >>> 0).to.equal(0x800000F0 >>> 0);
         expect(processDef!.processId).to.equal(2);
 
-        expect(dump.frames).to.equal('0111111111111111')
-        expect(dump.processes[0][1]).to.equal('init');
+        expect(dump.frames).to.equal('0111111111111111');
+        expect(dump.processes[0]).to.deep.equal([2, 1, 0x800000F0]);
     });
 
-    it ('can start a process', () => {
+    it ('can transfer a process', () => {
         const memory = new RandomAccessMemory(4, 4);
 
-        const processDef = memory.createProcess(1);
-        const runningProcessesBeforeStart = memory.getRunningProcesses();
-        memory.startProcess(1, processDef!.processId);
-        const runningProcessesAfterStart = memory.getRunningProcesses();
+        const processDef = memory.allocProcess(1);
+        const runningProcessesBeforeTransfer = memory.dump().processes;
+        memory.transferProcess(1, processDef!.processId);
+        const runningProcessesAfterTransfer = memory.dump().processes;
 
-        const dump = memory.dump();
-
-        expect(runningProcessesBeforeStart).to.be.empty;
-        expect(runningProcessesAfterStart.length).to.equal(1)
-        expect(runningProcessesAfterStart[0]).to.deep.equal(processDef);
-        expect(dump.processes[0][1]).to.equal('running');
+        expect(runningProcessesBeforeTransfer[0]).to.deep.equal([2, 1, 0x800000F0]);
+        expect(runningProcessesAfterTransfer[0]).to.deep.equal([2, 2, 0x800000F0]);
     });
 
-    it ('can kill a process', () => {
+    it ('can free a process', () => {
         const memory = new RandomAccessMemory(4, 4);
 
-        const processDef = memory.createProcess(1)!;
-        memory.startProcess(1, processDef.processId);
-        const runningProcessesBeforeKill = memory.getRunningProcesses();
-        memory.killProcess(processDef.processId);
-        const runningProcessesAfterKill = memory.getRunningProcesses();
+        const processDef = memory.allocProcess(1)!;
+        memory.transferProcess(1, processDef.processId);
+        const runningProcessesBeforeFree = memory.dump().processes;
+        memory.freeProcess(processDef.processId);
+        const runningProcessesAfterFree = memory.dump().processes;
 
-        const dump = memory.dump();
-
-        expect(runningProcessesBeforeKill.length).to.equal(1)
-        expect(runningProcessesBeforeKill[0]).to.deep.equal(processDef);
-        expect(runningProcessesAfterKill).to.be.empty;
-        expect(dump.processes[0][1]).to.equal('killed');
+        expect(runningProcessesBeforeFree[0]).to.deep.equal([2, 2, 0x800000F0]);
+        expect(runningProcessesAfterFree[0]).to.deep.equal([2, 0, 0x800000F0]);
     });
 
-    it ('won\'t start a process from a different owner', () => {
+    it ('won\'t transfer a process from a different owner', () => {
         const memory = new RandomAccessMemory(4, 4);
 
-        const processDef = memory.createProcess(1);
-        const runningProcessesBeforeStart = memory.getRunningProcesses();
-        memory.startProcess(7, processDef!.processId);
-        const runningProcessesAfterStart = memory.getRunningProcesses();
+        const processDef = memory.allocProcess(1);
+        const runningProcessesBeforeTransfer = memory.dump().processes;
+        memory.transferProcess(7, processDef!.processId);
+        const runningProcessesAfterTransfer = memory.dump().processes;
 
-        const dump = memory.dump();
-
-        expect(runningProcessesBeforeStart).to.be.empty;
-        expect(runningProcessesAfterStart).to.be.empty;
-        expect(dump.processes[0][1]).to.equal('init');
+        expect(runningProcessesBeforeTransfer[0]).to.deep.equal([2, 1, 0x800000F0]);
+        expect(runningProcessesAfterTransfer[0]).to.deep.equal([2, 1, 0x800000F0]);
     });
 });

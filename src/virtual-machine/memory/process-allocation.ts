@@ -1,37 +1,28 @@
 export class ProcessAllocation {
 
+    public ownerId: number;
     public processId: number;
-    public parentPId: number;
     public address: number;
-    public running: boolean;
-    public killed: boolean;
 
-    constructor(processId: number, parentPId: number, address: number) {
+    constructor(processId: number, ownerId: number, address: number) {
+        this.ownerId = ownerId;
         this.processId = processId;
-        this.parentPId = parentPId;
         this.address = address;
-        this.running = false;
-        this.killed = false;
     }
 
-    public start(ownerId: number): void {
-        if (this.parentPId != ownerId) return;
-        if (this.killed) return;
-
-        this.running = true;
+    public transfer(): void {
+        this.ownerId = this.processId;
     }
 
-    public kill(force: boolean = false): void {
-        if (!force && !this.running) return;
-
-        this.running = false;
-        this.killed = true;
+    public free(): void {
+        this.ownerId = 0;
     }
 
-    public dump(): [number, string] {
+    public dump(): [number, number, number] {
         return [
             this.processId,
-            this.killed ? 'killed' : this.running ? 'running' : 'init'
+            this.ownerId,
+            this.address >>> 0
         ];
     }
 }

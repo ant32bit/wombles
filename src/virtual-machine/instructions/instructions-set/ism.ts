@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -28,4 +30,7 @@ export class ImmediateSetMemoryInstruction implements IInstruction {
         const args = [this._destinationPointerRegister, this._immediateValue]
         return pack(ImmediateSetMemoryInstruction.HEAD, ImmediateSetMemoryInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

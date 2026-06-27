@@ -6,6 +6,13 @@ export interface IProcessDefinition {
     address: number;
 }
 
+export interface IMemoryResolver {
+
+    resolveGet(memory: RandomAccessMemory): number;
+    resolveGetByte(memory: RandomAccessMemory, index: 0): number;
+    resolveSet(memory: RandomAccessMemory, value: number): void;
+}
+
 export class RandomAccessMemory {
 
     private frameSize: number;
@@ -81,7 +88,11 @@ export class RandomAccessMemory {
         }
     }
 
-    public createProcess(parentPId: number): IProcessDefinition | null {
+    public getResolver(pointer: number, size: number): IMemoryResolver {
+        return new VariableMemoryResolver(pointer, size);
+    }
+
+    public allocProcess(parentPId: number): IProcessDefinition | null {
         try {
             const address = this.allocateFrame();
             const allocation = new ProcessAllocation(this.nextProcessId++, parentPId, address);
@@ -97,33 +108,25 @@ export class RandomAccessMemory {
         }
     }
 
-    public startProcess(ownerId: number, processId: number): void {
+    public transferProcess(ownerId: number, processId: number): void {
         const index = this.processes.findIndex(allocation => allocation.processId == processId);
         if (index < 0) return;
 
         const process = this.processes[index];
-        process.start(ownerId);
+        if (process.ownerId === ownerId)
+            process.transfer();
     }
 
-    public killProcess(processId: number): void {
+    public freeProcess(processId: number): void {
         const index = this.processes.findIndex(allocation => allocation.processId == processId);
         if (index < 0) return;
 
         const process = this.processes[index];
-        process.kill();
+        process.free();
 
         const unstartedChildren = this.processes
-            .filter(child => child.parentPId == processId && child.running == false)
-            .forEach(child => child.kill(true));
-    }
-
-    public getRunningProcesses(): IProcessDefinition[] {
-        return this.processes
-            .filter(p => p.running)
-            .map(p => ({
-                address: p.address,
-                processId: p.processId
-            }));
+            .filter(child => child.ownerId == processId)
+            .forEach(child => child.free());
     }
 
     public reserveHeap(ownerId: number, size: number): number | null {
@@ -151,11 +154,9 @@ export class RandomAccessMemory {
             if (heap.unreserve(ownerId, address))
                 break;
         }
-
-
     }
 
-    public dump(): { frames: string, processes: [number, string][], heaps: [number, number, number][][] } {
+    public dump(): { frames: string, processes: [number, number, number][], heaps: [number, number, number][][] } {
         const frameClusters = Array
             .from(this.frames, c => c.toString(2).padStart(32, '0'))
 
@@ -213,13 +214,13 @@ export class RandomAccessMemory {
     }
 
     private collect(): void {
-        const killedProcesses = this.processes.filter(allocation => allocation.killed);
+        const killedProcesses = this.processes.filter(allocation => allocation.ownerId === 0);
         for(const killedProcess of killedProcesses) {
             this.freeFrame(killedProcess.address);
             this.heaps.forEach(heap => heap.unreserveAll(killedProcess.processId));
         }
 
-        this.processes = this.processes.filter(allocation => !allocation.killed);
+        this.processes = this.processes.filter(allocation => allocation.ownerId !== 0);
         const unusedHeaps = this.heaps.filter(heap => !heap.hasReservations());
         this.heaps = this.heaps.filter(heap => heap.hasReservations());
         unusedHeaps.forEach(heap => this.freeFrame(heap.address));
@@ -239,4 +240,50 @@ export class RandomAccessMemory {
 
 class OutOfMemoryError extends Error {
     constructor() { super("out of memory"); }
+}
+
+class VariableMemoryResolver implements IMemoryResolver {
+    private baseAddress: number;
+    private size: number;
+
+    constructor(pointer: number, size: number) {
+        this.baseAddress = (pointer >>> 0) & 0x7FFFFFFF;
+        this.size = size;
+    }
+
+    public resolveGet(memory: RandomAccessMemory): number {
+        return memory.readNumber(this.getAddress(), this.size);
+    }
+
+    public resolveGetByte(memory: RandomAccessMemory, index: 0): number {
+        if (index < 0 || this.size >= index)
+            throw new RangeError(`index ${index} is out of range of ${this.size} byte memory resolver`);
+        return memory.readNumber(this.getAddress(index), 1);
+    }
+
+    public resolveSet(memory: RandomAccessMemory, value: number): void {
+        memory.writeNumber(this.getAddress(), this.size, value);
+    }
+
+    private getAddress(offset: number = 0): number {
+        return ((this.baseAddress + offset) >>> 0) | 0x80000000;
+    }
+}
+
+export class Memory32bitResolver extends VariableMemoryResolver {
+    constructor(pointer: number) {
+        super(pointer, 4);
+    }
+}
+
+export class Memory16bitResolver extends VariableMemoryResolver {
+    constructor(pointer: number) {
+        super(pointer, 2);
+    }
+}
+
+export class Memory8bitResolver extends VariableMemoryResolver {
+    constructor(pointer: number) {
+        super(pointer, 1);
+    }
 }

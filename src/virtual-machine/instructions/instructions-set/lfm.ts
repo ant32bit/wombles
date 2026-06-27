@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -30,4 +32,7 @@ export class LoadFromMemoryInstruction implements IInstruction {
         const args = [this._sourcePointerRegister, this._destinationRegister, this._destinationIndex]
         return pack(LoadFromMemoryInstruction.HEAD, LoadFromMemoryInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

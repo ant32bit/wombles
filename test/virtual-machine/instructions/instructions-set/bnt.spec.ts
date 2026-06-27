@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BinaryNotInstruction } from "..
 describe("bnt instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x7448;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BinaryNotInstruction);
@@ -14,8 +13,7 @@ describe("bnt instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('bnt $1, $2');
+        const actual = InstructionEncoder.encode('bnt $1, $2');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BinaryNotInstruction);

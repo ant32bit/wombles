@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, CopyMemoryInstruction } from ".
 describe("cpm instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x2812;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(CopyMemoryInstruction);
@@ -14,8 +13,7 @@ describe("cpm instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('cpm $1, $2');
+        const actual = InstructionEncoder.encode('cpm $1, $2');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(CopyMemoryInstruction);

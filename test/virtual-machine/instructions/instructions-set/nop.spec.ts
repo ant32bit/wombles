@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, NoOpInstruction } from "../../.
 describe("nop instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x0000;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(NoOpInstruction);
@@ -14,8 +13,7 @@ describe("nop instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('nop');
+        const actual = InstructionEncoder.encode('nop');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(NoOpInstruction);

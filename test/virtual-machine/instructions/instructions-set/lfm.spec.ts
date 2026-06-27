@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, LoadFromMemoryInstruction } fro
 describe("cpm instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x204B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(LoadFromMemoryInstruction);
@@ -14,8 +13,7 @@ describe("cpm instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('lfm $1, $2[3]');
+        const actual = InstructionEncoder.encode('lfm $1, $2[3]');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(LoadFromMemoryInstruction);

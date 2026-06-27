@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -31,4 +33,7 @@ export class RightShiftInstruction implements IInstruction {
         const args = [this._rhsRegister, this._lhsRegister, this._destinationRegister]
         return pack(RightShiftInstruction.HEAD, RightShiftInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BinaryExclusiveOrInstruction } 
 describe("bxr instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x704B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BinaryExclusiveOrInstruction);
@@ -14,8 +13,7 @@ describe("bxr instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('bxr $1, $2, $3');
+        const actual = InstructionEncoder.encode('bxr $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BinaryExclusiveOrInstruction);

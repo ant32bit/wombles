@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, TestEqualInstruction } from "..
 describe("teq instruction", () => {
     it("can be decoded", () => {
         const instruction = 0xA04B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(TestEqualInstruction);
@@ -14,8 +13,7 @@ describe("teq instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('teq $1, $2, $3');
+        const actual = InstructionEncoder.encode('teq $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(TestEqualInstruction);

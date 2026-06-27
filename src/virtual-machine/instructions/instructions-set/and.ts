@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -29,5 +31,16 @@ export class LogicalAndInstruction implements IInstruction {
     public encode(): number {
         const args = [this._rhsRegister, this._lhsRegister, this._destinationRegister]
         return pack(LogicalAndInstruction.HEAD, LogicalAndInstruction.PACK, args);
+    }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
+        const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const rhs = rhsResolver.resolveGet(memory) !== 0;
+        const lhs = lhsResolver.resolveGet(memory) !== 0;
+
+        destResolver.resolveSet(memory, rhs && lhs ? 1 : 0);
     }
 }

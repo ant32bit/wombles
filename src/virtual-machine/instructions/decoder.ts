@@ -25,26 +25,23 @@ const masks: MaskSet[] = (() => {
     return Object.keys(maskSets).sort().map(mask => maskSets[mask]);
 })();
 
-export class InstructionDecoder {
+export function decode(instruction: number): IInstruction | undefined {
 
-    public decode(instruction: number): IInstruction | undefined {
+    for(const maskSet of masks) {
+        const checkVal = instruction & maskSet[0];
 
-        for(const maskSet of masks) {
-            const checkVal = instruction & maskSet[0];
+        for(const instructionDefinition of maskSet[1]) {
+            if (checkVal !== instructionDefinition.HEAD)
+                continue;
 
-            for(const instructionDefinition of maskSet[1]) {
-                if (checkVal !== instructionDefinition.HEAD)
-                    continue;
-
-                try {
-                    return instructionDefinition.PARSE(unpack(instruction, [16, ...instructionDefinition.PACK]).splice(1));
-                }
-                catch {
-                    // could not create
-                }
+            try {
+                return instructionDefinition.PARSE(unpack(instruction, [16, ...instructionDefinition.PACK]).splice(1));
+            }
+            catch {
+                // could not create
             }
         }
-
-        return undefined;
     }
+
+    return undefined;
 }

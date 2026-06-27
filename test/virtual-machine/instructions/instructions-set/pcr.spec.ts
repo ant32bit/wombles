@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, ProcessCreateInstruction } from
 describe("pcr instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x019B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(ProcessCreateInstruction);
@@ -14,8 +13,7 @@ describe("pcr instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('pcr $1, $2, $3');
+        const actual = InstructionEncoder.encode('pcr $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(ProcessCreateInstruction);

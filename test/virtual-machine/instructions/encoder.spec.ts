@@ -12,9 +12,7 @@ describe("instruction encoder", () => {
 
     for(const task of successTasks)
         it(`can encode when ${task[0]}`, () => {
-
-            const encoder = new InstructionEncoder();
-            const actual = encoder.encode(task[1]);
+            const actual = InstructionEncoder.encode(task[1]);
             const encoded = actual!.encode();
 
             expect(actual).instanceOf(AdditionInstruction);
@@ -22,15 +20,13 @@ describe("instruction encoder", () => {
         });
 
     it ('return undefined for comment lines', () => {
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode(' # comment line');
+        const actual = InstructionEncoder.encode(' # comment line');
         expect(actual).is.undefined
     });
 
     it ('throws if opcode is invalid', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode(' bad');
+            InstructionEncoder.encode(' bad');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -41,9 +37,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if var is not a number', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $zero, $3');
+            InstructionEncoder.encode('add $1, $zero, $3');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -54,9 +49,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if var is below lower bound', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $2, $0');
+            InstructionEncoder.encode('add $1, $2, $0');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -67,9 +61,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if var is above upper bound', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $16, $3');
+            InstructionEncoder.encode('add $1, $16, $3');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -80,9 +73,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if pattern doesn\'t match', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $2[3]');
+            InstructionEncoder.encode('add $1, $2[3]');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -93,9 +85,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if pattern ends before input', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $2, $3, $4');
+            InstructionEncoder.encode('add $1, $2, $3, $4');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -106,9 +97,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if pattern ends before input (does not show white space)', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $2, $3 $4');
+            InstructionEncoder.encode('add $1, $2, $3 $4');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {
@@ -119,9 +109,8 @@ describe("instruction encoder", () => {
     });
 
     it ('throws if input ends before pattern', () => {
-        const encoder = new InstructionEncoder();
         try {
-            encoder.encode('add $1, $2');
+            InstructionEncoder.encode('add $1, $2');
             expect.fail('should have thrown before reaching here');
         }
         catch (actualError) {

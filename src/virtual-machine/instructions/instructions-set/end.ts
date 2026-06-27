@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction"
 import { pack } from "../packer"
 
@@ -26,4 +28,7 @@ export class ExitInstruction implements IInstruction {
         const args = [this._exitCode]
         return pack(ExitInstruction.HEAD, ExitInstruction.PACK, args);
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

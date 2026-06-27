@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, MemoryFreeInstruction } from ".
 describe("mfr instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x0141;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(MemoryFreeInstruction);
@@ -14,8 +13,7 @@ describe("mfr instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('mfr $1');
+        const actual = InstructionEncoder.encode('mfr $1');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(MemoryFreeInstruction);

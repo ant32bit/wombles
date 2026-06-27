@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BeginInterruptInstruction } fro
 describe("bei instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x028F;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BeginInterruptInstruction);
@@ -14,8 +13,7 @@ describe("bei instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('bei 7');
+        const actual = InstructionEncoder.encode('bei 7');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BeginInterruptInstruction);

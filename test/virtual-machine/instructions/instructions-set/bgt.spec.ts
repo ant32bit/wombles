@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BranchGreaterThanInstruction } 
 describe("bgt instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x904B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BranchGreaterThanInstruction);
@@ -14,8 +13,7 @@ describe("bgt instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('bgt $1, $2, $3');
+        const actual = InstructionEncoder.encode('bgt $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BranchGreaterThanInstruction);

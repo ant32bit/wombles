@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -27,5 +29,20 @@ export class BranchIfTrueInstruction implements IInstruction {
     public encode(): number {
         const args = [this._testRegister, this._offsetRegister, 0]
         return pack(BranchIfTrueInstruction.HEAD, BranchIfTrueInstruction.PACK, args);
+    }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const testResolver = process.getRegisterResolver(RegisterType.Data, this._testRegister);
+
+        const test = testResolver.resolveGet(memory);
+
+        if (test !== 0) {
+            const offsetResolver = process.getRegisterResolver(RegisterType.Data, this._offsetRegister);
+            const offset = offsetResolver.resolveGet(memory) + 0;
+
+            const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
+            const ip = ipResolver.resolveGet(memory);
+            ipResolver.resolveSet(memory, ip + offset);
+        }
     }
 }

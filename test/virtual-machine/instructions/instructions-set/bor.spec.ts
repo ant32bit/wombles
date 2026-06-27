@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BinaryOrInstruction } from "../
 describe("bor instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x6C4B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BinaryOrInstruction);
@@ -14,8 +13,7 @@ describe("bor instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('bor $1, $2, $3');
+        const actual = InstructionEncoder.encode('bor $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BinaryOrInstruction);

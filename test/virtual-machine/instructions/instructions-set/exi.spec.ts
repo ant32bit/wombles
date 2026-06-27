@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, ExecuteInterruptInstruction } f
 describe("exi instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x0285;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(ExecuteInterruptInstruction);
@@ -14,8 +13,7 @@ describe("exi instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('exi 5');
+        const actual = InstructionEncoder.encode('exi 5');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(ExecuteInterruptInstruction);

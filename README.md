@@ -33,6 +33,21 @@ Logging:
     postMessage interface
 
 
+# Process:
+
+| Name | Offset | Size | Justification | Notes |
+| --- | --- | --- | --- | --- |
+| Zero Register (`$0`) | - | - | | Always 0 - a virtual register
+| 32-bit Data Registers <br> (`$1` – `$14`) | 0 | 56 | 4 bytes <br> ⨉ 14 registers | registers available to instructions
+| Interrupt Register (`$15`) | 56 | 4 | | used as value when broadcasting or receiving an interrupt
+| Interrupt Index Registers (`I0` – `I7`) | 60 | 32 | 4 bytes <br> ⨉ 8 registers | set by `bei` - set IP to this when an interrupt occurs
+| Jump Back Index Registers (`J0` – `J7`) | 92 | 32 | 4 bytes <br> ⨉ 8 registers | set to the IP if 0 when an interrupt occurs
+| Stack Pointer (`SP`) | 124 | 4 | | Always points to the top of the stack
+| Instruction Pointer (`IP`) | 128 | 4 | | Points to the next executing instrution
+| Instruction Start | 132 | 892 | 1024 process allocation – 132 register bytes | All instructions of the program
+| Initial Stack Position | 1024 | 0 | | SP initial value
+
+# Instruction Set:
 
 ```
 00xxxxxxxxxxxxxx - system operations

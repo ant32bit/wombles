@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, BranchIfTrueInstruction } from 
 describe("bit instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x9848;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(BranchIfTrueInstruction);
@@ -14,8 +13,7 @@ describe("bit instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('bit $1, $2');
+        const actual = InstructionEncoder.encode('bit $1, $2');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(BranchIfTrueInstruction);

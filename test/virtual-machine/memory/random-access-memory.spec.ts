@@ -113,12 +113,12 @@ describe("random access memory", () => {
     it ('can garbage collect when it runs out of memory', () => {
         var memory = new RandomAccessMemory(2, 1);
 
-        const process1 = memory.createProcess(1);
-        memory.startProcess(1, process1!.processId);
-        memory.killProcess(process1!.processId);
+        const process1 = memory.allocProcess(1);
+        memory.transferProcess(1, process1!.processId);
+        memory.freeProcess(process1!.processId);
 
-        const process2 = memory.createProcess(1);
-        memory.startProcess(1, process2!.processId);
+        const process2 = memory.allocProcess(1);
+        memory.transferProcess(1, process2!.processId);
 
         const heap1 = memory.reserveHeap(1, 2);
         const heap2 = memory.reserveHeap(1, 2);
@@ -126,7 +126,7 @@ describe("random access memory", () => {
 
         const dumpBeforeGC = memory.dump();
 
-        memory.createProcess(1);
+        memory.allocProcess(1);
         const dumpAfterGC = memory.dump();
 
         expect(dumpBeforeGC).to.deep.equal({
@@ -136,8 +136,8 @@ describe("random access memory", () => {
                 [[0, 0x00, 2]]
             ],
             processes: [
-                [2, 'killed'],
-                [3, 'running']
+                [2, 0, 0x80000006],
+                [3, 3, 0x80000004]
             ]
         });
 
@@ -147,8 +147,8 @@ describe("random access memory", () => {
                 [[0, 0x02, 0], [1, 0x02, 2]]
             ],
             processes: [
-                [3, 'running'],
-                [4, 'init']
+                [3, 3, 0x80000004],
+                [4, 1, 0x80000006]
             ]
         });
     });

@@ -1,5 +1,5 @@
 export { IInstruction } from "./instruction";
-export { InstructionDecoder } from "./decoder";
-export { InstructionEncoder } from "./encoder";
+export * as InstructionDecoder from "./decoder";
+export * as InstructionEncoder from "./encoder";
 export * from "./instruction-errors";
 export * from "./instructions-set";

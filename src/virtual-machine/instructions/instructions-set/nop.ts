@@ -1,3 +1,5 @@
+import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
 
 export class NoOpInstruction implements IInstruction {
@@ -21,4 +23,7 @@ export class NoOpInstruction implements IInstruction {
     public encode(): number {
         return NoOpInstruction.HEAD;
     }
+
+    public evaluate(memory: RandomAccessMemory, process: Process): void { }
 }
+

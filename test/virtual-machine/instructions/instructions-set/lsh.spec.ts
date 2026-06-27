@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, LeftShiftInstruction } from "..
 describe("lsh instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x784B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(LeftShiftInstruction);
@@ -14,8 +13,7 @@ describe("lsh instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('lsh $1, $2, $3');
+        const actual = InstructionEncoder.encode('lsh $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(LeftShiftInstruction);

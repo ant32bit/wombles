@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, TestGreaterThanInstruction } fr
 describe("tgt instruction", () => {
     it("can be decoded", () => {
         const instruction = 0xB04B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(TestGreaterThanInstruction);
@@ -14,8 +13,7 @@ describe("tgt instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('tgt $1, $2, $3');
+        const actual = InstructionEncoder.encode('tgt $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(TestGreaterThanInstruction);

@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, SubtractionInstruction } from "
 describe("sub instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x484B;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(SubtractionInstruction);
@@ -14,8 +13,7 @@ describe("sub instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('sub $1, $2, $3');
+        const actual = InstructionEncoder.encode('sub $1, $2, $3');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(SubtractionInstruction);

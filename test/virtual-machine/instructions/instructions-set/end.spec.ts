@@ -4,8 +4,7 @@ import { InstructionDecoder, InstructionEncoder, ExitInstruction } from "../../.
 describe("end instruction", () => {
     it("can be decoded", () => {
         const instruction = 0x00E4;
-        const decoder = new InstructionDecoder();
-        const actual = decoder.decode(instruction);
+        const actual = InstructionDecoder.decode(instruction);
         const decoded = actual!.decode();
 
         expect(actual).instanceOf(ExitInstruction);
@@ -14,8 +13,7 @@ describe("end instruction", () => {
 
     it("can be encoded", () => {
 
-        const encoder = new InstructionEncoder();
-        const actual = encoder.encode('end 100');
+        const actual = InstructionEncoder.encode('end 100');
         const encoded = actual!.encode();
 
         expect(actual).instanceOf(ExitInstruction);
