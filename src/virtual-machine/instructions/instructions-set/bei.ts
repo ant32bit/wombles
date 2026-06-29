@@ -1,5 +1,5 @@
 import { RandomAccessMemory } from "../../memory/random-access-memory";
-import { Process } from "../../processor/process";
+import { Process, RegisterType } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -30,6 +30,13 @@ export class BeginInterruptInstruction implements IInstruction {
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
-        // does nothing during eval.
+        const ip = process.getRegisterResolver(RegisterType.InstructionPointer);
+        const irp = process.getRegisterResolver(RegisterType.Interrupt, this._interruptCode);
+        const ipValue = ip.resolveGet(memory);
+        irp.resolveSet(memory, ipValue + 2);
+    }
+
+    public getInterruptCode(): number {
+        return this._interruptCode;
     }
 }

@@ -1,4 +1,5 @@
-import { IProcessDefinition, IMemoryResolver, Memory32bitResolver, RandomAccessMemory } from "../memory";
+import { IProcessDefinition, IMemoryResolver, Memory32bitResolver } from "../memory";
+import { ZeroRegisterResolver } from "./zero-register"
 
 export enum RegisterType {
     Data,
@@ -10,34 +11,38 @@ export enum RegisterType {
 
 export class Process {
 
-    private static R_OFFSETS: Map<RegisterType, number> = new Map([
+    public static INSTRUCTIONS_OFFSET: number = 132;
+
+    public static REGISTERS_OFFSETS: Map<RegisterType, number> = new Map([
         [RegisterType.Data, 0],
         [RegisterType.Interrupt, 60],
         [RegisterType.JumpBack, 92],
-        [RegisterType.StackPointer, 124],
-        [RegisterType.InstructionPointer, 128]
+        [RegisterType.InstructionPointer, 124],
+        [RegisterType.StackPointer, 128]
     ]);
-
-    private static INIT_IP: number = 132;
 
     private processId: number;
     private address: number;
-    private memory: RandomAccessMemory;
 
     private running: boolean;
     private killed: boolean;
 
-    constructor(memory: RandomAccessMemory, definition: IProcessDefinition) {
+    constructor(definition: IProcessDefinition) {
         this.processId = definition.processId;
         this.address = definition.address;
-        this.memory = memory;
         this.running = false;
         this.killed = false;
     }
 
+    public getProcessDefinition(): IProcessDefinition {
+        return {
+            processId: this.processId,
+            address: this.address
+        };
+    }
+
     public isStarted(): boolean { return this.running; }
     public isKilled(): boolean { return this.killed; }
-
 
     public start(): boolean {
         if (this.killed)
@@ -61,16 +66,14 @@ export class Process {
             return new ZeroRegisterResolver();
 
         const baseAddress = this.address >>> 0;
-        const registerOffset = Process.R_OFFSETS.get(type) || 0;
-        const register = type in [RegisterType.InstructionPointer, RegisterType.StackPointer] ? 0 : number * 4;
+        const registersOffset = Process.REGISTERS_OFFSETS.get(type)! || 0;
+        const memoryOffset =
+            (type === RegisterType.InstructionPointer || type === RegisterType.StackPointer ? 0 : ((number - (type === RegisterType.Data ? 1 : 0)) * 4));
 
-        return new Memory32bitResolver(baseAddress + registerOffset + register);
+        return new Memory32bitResolver(baseAddress + registersOffset + memoryOffset);
+    }
+
+    public dump(): [number, number, string] {
+        return [this.processId, this.address >>> 0, (this.running ? 'r' : '_') + (this.killed ? 'k' : '_')]
     }
 }
-
-class ZeroRegisterResolver implements IMemoryResolver {
-    resolveGet(memory: RandomAccessMemory): number { return 0; }
-    resolveGetByte(memory: RandomAccessMemory, index: 0): number { return 0; }
-    resolveSet(memory: RandomAccessMemory, value: number): void { return; }
-}
-

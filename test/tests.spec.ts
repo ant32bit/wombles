@@ -63,4 +63,8 @@ describe("virtual machine", () => {
         require("./virtual-machine/memory/process-allocation.spec");
         require("./virtual-machine/memory/heap-allocation.spec");
     });
+
+    describe("processing", () => {
+        require("./virtual-machine/processor/central-processing-unit.spec");
+    });
 });

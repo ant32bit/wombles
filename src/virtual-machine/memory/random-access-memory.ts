@@ -60,6 +60,10 @@ export class RandomAccessMemory {
         this.processes = [];
     }
 
+    public getFrameSizeInBytes(): number {
+        return this.frameSize;
+    }
+
     public readNumber(pointer: number, size: number): number {
         const bytes: number[] = [];
 
@@ -100,7 +104,7 @@ export class RandomAccessMemory {
             this.processes.push(allocation);
             return {
                 processId: allocation.processId,
-                address: allocation.address
+                address: allocation.address >>> 0
             };
         }
         catch {
@@ -108,13 +112,17 @@ export class RandomAccessMemory {
         }
     }
 
-    public transferProcess(ownerId: number, processId: number): void {
+    public transferProcess(ownerId: number, processId: number): boolean {
         const index = this.processes.findIndex(allocation => allocation.processId == processId);
-        if (index < 0) return;
+        if (index < 0)
+            return false;
 
         const process = this.processes[index];
-        if (process.ownerId === ownerId)
-            process.transfer();
+        if (process.ownerId !== ownerId)
+            return false;
+
+        process.transfer();
+        return true;
     }
 
     public freeProcess(processId: number): void {
