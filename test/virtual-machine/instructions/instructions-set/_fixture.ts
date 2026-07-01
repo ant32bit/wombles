@@ -1,13 +1,12 @@
 import { IInstruction } from "../../../../src/virtual-machine/instructions";
 import { IProcessDefinition, RandomAccessMemory } from "../../../../src/virtual-machine/memory";
-import { CentralProcessingUnit, Process, RegisterType } from "../../../../src/virtual-machine/processor";
+import { CentralProcessingUnit, ProcessMapping, RegisterType } from "../../../../src/virtual-machine/processor";
 
 export class VirtualMachineFixture {
 
     public memory: RandomAccessMemory;
     public cpu: CentralProcessingUnit;
-
-    private process: IProcessDefinition;
+    public process: IProcessDefinition;
 
     constructor() {
         this.memory = new RandomAccessMemory(2, 8);
@@ -16,14 +15,14 @@ export class VirtualMachineFixture {
     }
 
     public setInstruction(instruction: IInstruction) {
-        const address = (this.process.address >>> 0) + Process.INSTRUCTIONS_OFFSET;
+        const address = (this.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET;
         const value = instruction.encode();
         this.memory.writeNumber(address, 2, value);
     }
 
     public setRegister(type: RegisterType, number: number, value: number) {
         const baseAddress = this.process.address >>> 0;
-        const registersOffset = Process.REGISTERS_OFFSETS.get(type)!;
+        const registersOffset = ProcessMapping.REGISTERS_OFFSETS.get(type)!;
         const memoryOffset =
             (type === RegisterType.InstructionPointer || type === RegisterType.StackPointer ? 0 : ((number - (type === RegisterType.Data ? 1 : 0)) * 4));
         const address = baseAddress + registersOffset + memoryOffset;

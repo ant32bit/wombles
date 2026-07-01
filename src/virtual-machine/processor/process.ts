@@ -1,25 +1,8 @@
 import { IProcessDefinition, IMemoryResolver, Memory32bitResolver } from "../memory";
-import { ZeroRegisterResolver } from "./zero-register"
-
-export enum RegisterType {
-    Data,
-    Interrupt,
-    JumpBack,
-    StackPointer,
-    InstructionPointer
-}
+import { ZeroRegisterResolver } from "./zero-register";
+import { ProcessMapping, RegisterType } from "./process-mapping";
 
 export class Process {
-
-    public static INSTRUCTIONS_OFFSET: number = 132;
-
-    public static REGISTERS_OFFSETS: Map<RegisterType, number> = new Map([
-        [RegisterType.Data, 0],
-        [RegisterType.Interrupt, 60],
-        [RegisterType.JumpBack, 92],
-        [RegisterType.InstructionPointer, 124],
-        [RegisterType.StackPointer, 128]
-    ]);
 
     private processId: number;
     private address: number;
@@ -66,7 +49,7 @@ export class Process {
             return new ZeroRegisterResolver();
 
         const baseAddress = this.address >>> 0;
-        const registersOffset = Process.REGISTERS_OFFSETS.get(type)! || 0;
+        const registersOffset = ProcessMapping.REGISTERS_OFFSETS.get(type)! || 0;
         const memoryOffset =
             (type === RegisterType.InstructionPointer || type === RegisterType.StackPointer ? 0 : ((number - (type === RegisterType.Data ? 1 : 0)) * 4));
 

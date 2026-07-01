@@ -1,5 +1,6 @@
 import { IProcessDefinition, Memory16bitResolver, RandomAccessMemory } from "../memory";
-import { Process, RegisterType } from "./process";
+import { ProcessMapping, RegisterType } from "./process-mapping";
+import { Process } from "./process";
 import * as Decoder from "../instructions/decoder";
 import { BeginInterruptInstruction } from "../instructions/instructions-set";
 
@@ -22,7 +23,7 @@ export class CentralProcessingUnit {
         const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
         const spResolver = process.getRegisterResolver(RegisterType.StackPointer);
 
-        ipResolver.resolveSet(this.memory, processDefinition.address + Process.INSTRUCTIONS_OFFSET);
+        ipResolver.resolveSet(this.memory, processDefinition.address + ProcessMapping.INSTRUCTIONS_OFFSET);
         spResolver.resolveSet(this.memory, processDefinition.address + this.memory.getFrameSizeInBytes());
 
         this.processes[this.generateProcessKey(processDefinition.processId)] = process;
@@ -44,7 +45,7 @@ export class CentralProcessingUnit {
 
         const processDefinition = process.getProcessDefinition();
 
-        const instructionsPointer = (processDefinition.address + Process.INSTRUCTIONS_OFFSET) >>> 0;
+        const instructionsPointer = (processDefinition.address + ProcessMapping.INSTRUCTIONS_OFFSET) >>> 0;
         const instructionsEnd = (processDefinition.address + this.memory.getFrameSizeInBytes()) >>> 0;
 
         // read interrupts
@@ -125,7 +126,7 @@ export class CentralProcessingUnit {
 
         const dump: [string, number[]][] = [['R', []]];
 
-        for (let offset = 0; offset < Process.INSTRUCTIONS_OFFSET; offset += 4) {
+        for (let offset = 0; offset < ProcessMapping.INSTRUCTIONS_OFFSET; offset += 4) {
             let i = dump.length - 1;
             if (DUMP_REGISTERS[i][1] <= offset) {
                 dump.push([DUMP_REGISTERS[++i][0], []]);
@@ -151,7 +152,7 @@ const DUMP_REGISTERS: [string, number][] = (() => {
 
     for (let i = 0; i < r.length; i++) {
         const title = base[i][1];
-        let end = (i + 1 >= r.length) ? Process.INSTRUCTIONS_OFFSET : Process.REGISTERS_OFFSETS.get(base[i + 1][0]) ?? 0;
+        let end = (i + 1 >= r.length) ? ProcessMapping.INSTRUCTIONS_OFFSET : ProcessMapping.REGISTERS_OFFSETS.get(base[i + 1][0]) ?? 0;
         r[i] = [title, end];
     }
 

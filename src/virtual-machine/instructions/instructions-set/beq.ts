@@ -1,5 +1,6 @@
 import { RandomAccessMemory } from "../../memory/random-access-memory";
-import { Process, RegisterType } from "../../processor/process";
+import { RegisterType } from "../../processor";
+import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
 
@@ -46,7 +47,7 @@ export class BranchEqualInstruction implements IInstruction {
 
             const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
             const ip = ipResolver.resolveGet(memory);
-            ipResolver.resolveSet(memory, ip + offset);
+            ipResolver.resolveSet(memory, ip + (offset * 2));
         }
     }
 }

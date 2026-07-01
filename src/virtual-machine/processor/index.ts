@@ -1,2 +1,2 @@
 export * from "./central-processing-unit";
-export * from "./process";
+export * from "./process-mapping";

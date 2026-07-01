@@ -12,7 +12,6 @@ describe("cpm instruction", () => {
     });
 
     it("can be encoded", () => {
-
         const actual = InstructionEncoder.encode('cpm $1, $2');
         const encoded = actual!.encode();
 

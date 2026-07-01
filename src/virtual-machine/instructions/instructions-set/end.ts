@@ -1,5 +1,6 @@
 import { RandomAccessMemory } from "../../memory/random-access-memory";
-import { Process, RegisterType } from "../../processor/process";
+import { RegisterType } from "../../processor";
+import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction"
 import { pack } from "../packer"
 

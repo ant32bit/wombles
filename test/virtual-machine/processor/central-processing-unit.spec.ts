@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { RandomAccessMemory } from "../../../src/virtual-machine/memory";
-import { CentralProcessingUnit } from "../../../src/virtual-machine/processor";
-import { Process, RegisterType } from "../../../src/virtual-machine/processor/process";
+import { CentralProcessingUnit, RegisterType, ProcessMapping } from "../../../src/virtual-machine/processor";
 import { BeginInterruptInstruction } from "../../../src/virtual-machine/instructions";
 
 describe('central processing unit', () => {
@@ -56,7 +55,7 @@ describe('central processing unit', () => {
         const def = cpu.createProcess(1);
         const cpuAfterCreate = cpu.dump();
 
-        const expectedIp = def!.address + Process.INSTRUCTIONS_OFFSET;
+        const expectedIp = def!.address + ProcessMapping.INSTRUCTIONS_OFFSET;
         const actualIp = cpuAfterCreate.registers[0].find(d => d[0] == 'IP')![1][0];
 
         const expectedSp = def!.address + 256;
@@ -72,10 +71,10 @@ describe('central processing unit', () => {
 
         const def = cpu.createProcess(1);
 
-        const instrPtr = (def!.address + Process.INSTRUCTIONS_OFFSET) >>> 0;
+        const instrPtr = (def!.address + ProcessMapping.INSTRUCTIONS_OFFSET) >>> 0;
         const expectedAddresses = [0, 22, 14, 64, 92, 12, 46, 56].map(offset => instrPtr + offset);
 
-        const jRegPrt = (def!.address >>> 0) + Process.REGISTERS_OFFSETS.get(RegisterType.JumpBack)!;
+        const jRegPrt = (def!.address >>> 0) + ProcessMapping.REGISTERS_OFFSETS.get(RegisterType.JumpBack)!;
 
         for (let i = 0; i < expectedAddresses.length; i++) {
             // add interrupt instructions
