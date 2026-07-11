@@ -30,6 +30,14 @@ export class MemoryFreeInstruction implements IInstruction {
         return pack(MemoryFreeInstruction.HEAD, MemoryFreeInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+
+        const processId = process.getProcessDefinition().processId;
+
+        const resolver = process.getRegisterResolver(RegisterType.Data, this._pointerRegister);
+        const address = resolver.resolveGet(memory);
+
+        memory.freeHeap(processId, address);
+    }
 }
 

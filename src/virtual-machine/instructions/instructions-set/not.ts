@@ -32,6 +32,13 @@ export class LogicalNotInstruction implements IInstruction {
         return pack(LogicalNotInstruction.HEAD, LogicalNotInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const srcResolver = process.getRegisterResolver(RegisterType.Data, this._sourceRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const src = srcResolver.resolveGet(memory) !== 0;
+
+        destResolver.resolveSet(memory, !src ? 1 : 0);
+    }
 }
 

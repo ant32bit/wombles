@@ -32,6 +32,17 @@ export class MemoryRequestInstruction implements IInstruction {
         return pack(MemoryRequestInstruction.HEAD, MemoryRequestInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+
+        const pointerResolver = process.getRegisterResolver(RegisterType.Data, this._pointerRegister);
+        const sizeResolver = process.getRegisterResolver(RegisterType.Data, this._sizeRegister);
+
+        const size = sizeResolver.resolveGet(memory);
+
+        const processId = process.getProcessDefinition().processId;
+        const address = memory.reserveHeap(processId, size) ?? 0;
+
+        pointerResolver.resolveSet(memory, address);
+    }
 }
 

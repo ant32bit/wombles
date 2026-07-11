@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { InstructionDecoder, InstructionEncoder, NoOpInstruction } from "../../../../src/virtual-machine/instructions";
+import { VirtualMachineFixture } from "./_fixture";
 
 describe("nop instruction", () => {
     it("can be decoded", () => {
@@ -18,5 +19,13 @@ describe("nop instruction", () => {
 
         expect(actual).instanceOf(NoOpInstruction);
         expect(encoded).is.equals(0x0000);
+    });
+
+    it("can just not die", () => {
+        const fixture = new VirtualMachineFixture();
+        const instruction = new NoOpInstruction();
+
+        fixture.setInstruction(instruction);
+        fixture.run();
     });
 });

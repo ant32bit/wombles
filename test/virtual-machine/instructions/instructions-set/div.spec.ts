@@ -22,7 +22,7 @@ describe("div instruction", () => {
         expect(encoded).is.equals(0x504B);
     });
 
-    it("can add two numbers", () => {
+    it("can divide two numbers", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new DivisionInstruction(1, 2, 3);
 
@@ -35,7 +35,20 @@ describe("div instruction", () => {
         expect(actualResult).to.equal(2);
     });
 
-    it("can add positive and negative numbers", () => {
+    it("can divide two numbers and discard the remainder", () => {
+        const fixture = new VirtualMachineFixture();
+        const instruction = new DivisionInstruction(1, 2, 3);
+
+        fixture.setInstruction(instruction);
+        fixture.setRegister(RegisterType.Data, 1, 5);
+        fixture.setRegister(RegisterType.Data, 2, 2);
+        fixture.run();
+
+        const actualResult = fixture.getRegister(RegisterType.Data, 3);
+        expect(actualResult).to.equal(2);
+    });
+
+    it("can divide positive and negative numbers", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new DivisionInstruction(1, 2, 3);
 
