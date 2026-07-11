@@ -10,8 +10,9 @@ export interface IMemoryResolver {
 
     resolveGet(memory: RandomAccessMemory): number;
     resolveGetSigned(memory: RandomAccessMemory): number;
-    resolveGetByte(memory: RandomAccessMemory, index: 0): number;
+    resolveGetByte(memory: RandomAccessMemory, index: number): number;
     resolveSet(memory: RandomAccessMemory, value: number): void;
+    resolveSetByte(memory: RandomAccessMemory, index: number, value: number): void;
 }
 
 export class RandomAccessMemory {
@@ -268,14 +269,20 @@ class VariableMemoryResolver implements IMemoryResolver {
         return this.get(memory, this.size) | 0;
     }
 
-    public resolveGetByte(memory: RandomAccessMemory, index: 0): number {
-        if (index < 0 || this.size >= index)
+    public resolveGetByte(memory: RandomAccessMemory, index: number): number {
+        if (index < 0 || index >= this.size)
             throw new RangeError(`index ${index} is out of range of ${this.size} byte memory resolver`);
         return memory.readNumber(this.getAddress(index), 1);
     }
 
     public resolveSet(memory: RandomAccessMemory, value: number): void {
         memory.writeNumber(this.getAddress(), this.size, value);
+    }
+
+    public resolveSetByte(memory: RandomAccessMemory, index: number, value: number): void {
+        if (index < 0 || index >= this.size)
+            throw new RangeError(`index ${index} is out of range of ${this.size} byte memory resolver`);
+        memory.writeNumber(this.getAddress(index), 1, value);
     }
 
     private get(memory: RandomAccessMemory, size: number) {
