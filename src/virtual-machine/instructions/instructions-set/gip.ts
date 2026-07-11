@@ -30,6 +30,12 @@ export class GetInstructionPointerInstruction implements IInstruction {
         return pack(GetInstructionPointerInstruction.HEAD, GetInstructionPointerInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const value = ipResolver.resolveGet(memory);
+        destResolver.resolveSet(memory, value);
+    }
 }
 

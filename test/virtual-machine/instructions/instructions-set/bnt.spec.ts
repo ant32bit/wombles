@@ -32,8 +32,7 @@ describe("bnt instruction", () => {
         fixture.setRegister(RegisterType.Data, 1, 0x12489AC3);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'R')![1][1]).to.equal(0xEDB7653C);
+        const actualResult = fixture.getRegister(RegisterType.Data, 2);
+        expect(actualResult).to.equal(0xEDB7653C);
     });
 });

@@ -34,6 +34,15 @@ export class LogicalOrInstruction implements IInstruction {
         return pack(LogicalOrInstruction.HEAD, LogicalOrInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
+        const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const rhs = rhsResolver.resolveGet(memory) !== 0;
+        const lhs = lhsResolver.resolveGet(memory) !== 0;
+
+        destResolver.resolveSet(memory, rhs || lhs ? 1 : 0);
+    }
 }
 

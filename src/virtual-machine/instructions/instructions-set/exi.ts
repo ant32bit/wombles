@@ -30,6 +30,8 @@ export class ExecuteInterruptInstruction implements IInstruction {
         return pack(ExecuteInterruptInstruction.HEAD, ExecuteInterruptInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        /// TODO: Implement Interrupt System Calls
+    }
 }
 

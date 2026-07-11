@@ -32,9 +32,8 @@ describe("bif instruction", () => {
         fixture.setRegister(RegisterType.Data, 2, 5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 
     it("can branch to a negative offset", () => {
@@ -47,9 +46,8 @@ describe("bif instruction", () => {
         fixture.setRegister(RegisterType.Data, 2, -5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 
     it("won't branch when register is true", () => {
@@ -62,8 +60,7 @@ describe("bif instruction", () => {
         fixture.setRegister(RegisterType.Data, 2, 5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 });

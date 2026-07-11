@@ -30,6 +30,12 @@ export class ExitInstruction implements IInstruction {
         return pack(ExitInstruction.HEAD, ExitInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const systemRegisterResolver = process.getRegisterResolver(RegisterType.Data, 15);
+        systemRegisterResolver.resolveSet(memory, this._exitCode);
+
+        const me = process.getProcessDefinition().processId;
+        process.os.kill(me);
+    }
 }
 

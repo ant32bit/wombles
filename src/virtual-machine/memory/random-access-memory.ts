@@ -9,6 +9,7 @@ export interface IProcessDefinition {
 export interface IMemoryResolver {
 
     resolveGet(memory: RandomAccessMemory): number;
+    resolveGetSigned(memory: RandomAccessMemory): number;
     resolveGetByte(memory: RandomAccessMemory, index: 0): number;
     resolveSet(memory: RandomAccessMemory, value: number): void;
 }
@@ -260,7 +261,11 @@ class VariableMemoryResolver implements IMemoryResolver {
     }
 
     public resolveGet(memory: RandomAccessMemory): number {
-        return memory.readNumber(this.getAddress(), this.size);
+        return this.get(memory, this.size) >>> 0;
+    }
+
+    public resolveGetSigned(memory: RandomAccessMemory): number {
+        return this.get(memory, this.size) | 0;
     }
 
     public resolveGetByte(memory: RandomAccessMemory, index: 0): number {
@@ -271,6 +276,10 @@ class VariableMemoryResolver implements IMemoryResolver {
 
     public resolveSet(memory: RandomAccessMemory, value: number): void {
         memory.writeNumber(this.getAddress(), this.size, value);
+    }
+
+    private get(memory: RandomAccessMemory, size: number) {
+        return memory.readNumber(this.getAddress(), this.size);
     }
 
     private getAddress(offset: number = 0): number {

@@ -34,8 +34,7 @@ describe("bor instruction", () => {
         fixture.setRegister(RegisterType.Data, 2, 0x533335AA);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'R')![1][2]).to.equal(0x777BBDEB);
+        const actualResult = fixture.getRegister(RegisterType.Data, 3);
+        expect(actualResult).to.equal(0x777BBDEB);
     });
 });

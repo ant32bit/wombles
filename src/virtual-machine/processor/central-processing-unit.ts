@@ -1,6 +1,6 @@
 import { IProcessDefinition, Memory16bitResolver, RandomAccessMemory } from "../memory";
 import { ProcessMapping, RegisterType } from "./process-mapping";
-import { Process } from "./process";
+import { ISystemOperations, Process } from "./process";
 import * as Decoder from "../instructions/decoder";
 import { BeginInterruptInstruction } from "../instructions/instructions-set";
 
@@ -19,7 +19,13 @@ export class CentralProcessingUnit {
         if (processDefinition == null)
             return null;
 
-        const process = new Process(processDefinition);
+        const authenticatedOperations: ISystemOperations = {
+            create: (() => this.createProcess(processDefinition.processId)).bind(this),
+            start: ((pid: number) => this.startProcess(processDefinition.processId, pid)).bind(this),
+            kill: ((pid: number) => this.killProcess(pid)).bind(this)
+        };
+
+        const process = new Process(processDefinition, authenticatedOperations);
         const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
         const spResolver = process.getRegisterResolver(RegisterType.StackPointer);
 
@@ -38,6 +44,9 @@ export class CentralProcessingUnit {
         const process = this.processes[this.generateProcessKey(processId)];
 
         if (process == null)
+            return;
+
+        if (process.isStarted())
             return;
 
         if (!this.memory.transferProcess(parentProcessId, processId))

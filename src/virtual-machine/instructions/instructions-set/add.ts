@@ -39,8 +39,8 @@ export class AdditionInstruction implements IInstruction {
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
         const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
 
-        const rhs = rhsResolver.resolveGet(memory);
-        const lhs = lhsResolver.resolveGet(memory);
+        const rhs = rhsResolver.resolveGetSigned(memory);
+        const lhs = lhsResolver.resolveGetSigned(memory);
 
         destResolver.resolveSet(memory, rhs + lhs);
     }

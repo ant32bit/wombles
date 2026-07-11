@@ -1,4 +1,4 @@
-import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Memory8bitResolver, RandomAccessMemory } from "../../memory/random-access-memory";
 import { RegisterType } from "../../processor";
 import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
@@ -32,6 +32,12 @@ export class ImmediateSetMemoryInstruction implements IInstruction {
         return pack(ImmediateSetMemoryInstruction.HEAD, ImmediateSetMemoryInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const destRegResolver = process.getRegisterResolver(RegisterType.Data, this._destinationPointerRegister);
+        const destAddress = destRegResolver.resolveGet(memory);
+        const destResolver = new Memory8bitResolver(destAddress);
+
+        destResolver.resolveSet(memory, this._immediateValue);
+    }
 }
 

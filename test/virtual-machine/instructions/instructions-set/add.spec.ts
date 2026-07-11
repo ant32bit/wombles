@@ -31,9 +31,8 @@ describe("add instruction", () => {
         fixture.setRegister(RegisterType.Data, 2, 3);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'R')![1][2]).to.equal(5);
+        const actualResult = fixture.getRegister(RegisterType.Data, 3);
+        expect(actualResult).to.equal(5);
     });
 
     it("can add positive and negative numbers", () => {
@@ -45,9 +44,8 @@ describe("add instruction", () => {
         fixture.setRegister(RegisterType.Data, 2, 2);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'R')![1][2]).to.equal(0xFFFFFFFF); // (-1)
+        const actualResult = fixture.getRegister(RegisterType.Data, 3);
+        expect(actualResult).to.equal(0xFFFFFFFF); // (-1)
     });
 });
 

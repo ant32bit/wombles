@@ -32,6 +32,10 @@ export class IncrementMemoryPointerInstruction implements IInstruction {
         return pack(IncrementMemoryPointerInstruction.HEAD, IncrementMemoryPointerInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const resolver = process.getRegisterResolver(RegisterType.Data, this._pointerRegister);
+        const value = resolver.resolveGet(memory);
+        resolver.resolveSet(memory, value + this._valueSize);
+    }
 }
 

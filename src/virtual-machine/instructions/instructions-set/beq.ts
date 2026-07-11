@@ -43,7 +43,7 @@ export class BranchEqualInstruction implements IInstruction {
 
         if (rhs === lhs) {
             const offsetResolver = process.getRegisterResolver(RegisterType.Data, this._offsetRegister);
-            const offset = offsetResolver.resolveGet(memory) + 0;
+            const offset = offsetResolver.resolveGetSigned(memory);
 
             const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
             const ip = ipResolver.resolveGet(memory);

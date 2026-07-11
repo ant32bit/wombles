@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import { InstructionDecoder, InstructionEncoder, ImmediateSetMemoryInstruction } from "../../../../src/virtual-machine/instructions";
+import { VirtualMachineFixture } from "./_fixture";
+import { RegisterType } from "../../../../src/virtual-machine/processor/process-mapping";
 
 describe("ism instruction", () => {
     it("can be decoded", () => {
@@ -18,5 +20,22 @@ describe("ism instruction", () => {
 
         expect(actual).instanceOf(ImmediateSetMemoryInstruction);
         expect(encoded).is.equals(0x318B);
+    });
+
+    it("can set memory", () => {
+        const fixture = new VirtualMachineFixture();
+        const instruction = new ImmediateSetMemoryInstruction(1, 100);
+
+        const destinationAddress = 0x8000015F;
+
+        fixture.memory.writeNumber(destinationAddress, 1, 30);
+
+        fixture.setInstruction(instruction);
+        fixture.setRegister(RegisterType.Data, 1, destinationAddress);
+        fixture.run();
+
+        const actualValue = fixture.memory.readNumber(destinationAddress, 1);
+
+        expect(actualValue).to.equal(100);
     });
 });

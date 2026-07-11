@@ -39,7 +39,7 @@ export class BranchIfTrueInstruction implements IInstruction {
 
         if (test !== 0) {
             const offsetResolver = process.getRegisterResolver(RegisterType.Data, this._offsetRegister);
-            const offset = offsetResolver.resolveGet(memory) + 0;
+            const offset = offsetResolver.resolveGetSigned(memory);
 
             const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
             const ip = ipResolver.resolveGet(memory);

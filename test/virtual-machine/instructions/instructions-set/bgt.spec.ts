@@ -33,9 +33,8 @@ describe("bgt instruction", () => {
         fixture.setRegister(RegisterType.Data, 3, 5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 
     it("can branch to a negative offset", () => {
@@ -49,9 +48,8 @@ describe("bgt instruction", () => {
         fixture.setRegister(RegisterType.Data, 3, -5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 
     it("won't branch if two registers are equal", () => {
@@ -65,9 +63,8 @@ describe("bgt instruction", () => {
         fixture.setRegister(RegisterType.Data, 3, 5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 
     it("won't branch when lhs < rhs", () => {
@@ -81,8 +78,7 @@ describe("bgt instruction", () => {
         fixture.setRegister(RegisterType.Data, 3, 5);
         fixture.run();
 
-        const dump = fixture.cpu.dump();
-
-        expect(dump.registers[0].find(d => d[0] == 'IP')![1][0]).to.equal(expectedAddress);
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
     });
 });

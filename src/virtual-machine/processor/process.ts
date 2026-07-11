@@ -2,6 +2,12 @@ import { IProcessDefinition, IMemoryResolver, Memory32bitResolver } from "../mem
 import { ZeroRegisterResolver } from "./zero-register";
 import { ProcessMapping, RegisterType } from "./process-mapping";
 
+export interface ISystemOperations {
+    create(): IProcessDefinition | null;
+    start(pid: number): void;
+    kill(pid: number): void;
+}
+
 export class Process {
 
     private processId: number;
@@ -10,11 +16,15 @@ export class Process {
     private running: boolean;
     private killed: boolean;
 
-    constructor(definition: IProcessDefinition) {
+    public os: ISystemOperations;
+
+    constructor(definition: IProcessDefinition, os: ISystemOperations) {
         this.processId = definition.processId;
         this.address = definition.address;
         this.running = false;
         this.killed = false;
+
+        this.os = os;
     }
 
     public getProcessDefinition(): IProcessDefinition {

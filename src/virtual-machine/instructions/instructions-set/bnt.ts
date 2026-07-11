@@ -36,7 +36,7 @@ export class BinaryNotInstruction implements IInstruction {
         const srcResolver = process.getRegisterResolver(RegisterType.Data, this._sourceRegister);
         const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
 
-        const src = srcResolver.resolveGet(memory) >>> 0;
+        const src = srcResolver.resolveGet(memory);
 
         destResolver.resolveSet(memory, (~src) >>> 0);
     }

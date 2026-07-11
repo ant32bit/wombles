@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { InstructionDecoder, InstructionEncoder, BeginInterruptInstruction } from "../../../../src/virtual-machine/instructions";
 import { VirtualMachineFixture } from "./_fixture";
-import { ProcessMapping } from "../../../../src/virtual-machine/processor";
+import { ProcessMapping, RegisterType } from "../../../../src/virtual-machine/processor";
 
 describe("bei instruction", () => {
     it("can be decoded", () => {
@@ -36,8 +36,7 @@ describe("bei instruction", () => {
             fixture.setInstruction(instruction);
             fixture.run();
 
-            const dump = fixture.cpu.dump();
-
-            expect(dump.registers[0].find(d => d[0] == 'I')![1][i]).to.equal(expectedAddress);
+            const actualResult = fixture.getRegister(RegisterType.Interrupt, i);
+            expect(actualResult).to.equal(expectedAddress);
         });
 });

@@ -15,23 +15,29 @@ export class CopyRegisterInstruction implements IInstruction {
     public static PARSE(components: number[]): IInstruction { return new this(components[1], components[2]); }
     public static BUILD(variables: {x: number | null, y: number | null, z: number | null}): IInstruction { return new this(variables.x!, variables.y!); }
 
-    private _sourcePointerRegister: number;
-    private _destinationPointerRegister: number;
+    private _sourceRegister: number;
+    private _destinationRegister: number;
 
-    constructor(sourcePointerRegister: number, destinationPointerRegister: number) {
-        this._sourcePointerRegister = sourcePointerRegister;
-        this._destinationPointerRegister = destinationPointerRegister;
+    constructor(sourceRegister: number, destinationRegister: number) {
+        this._sourceRegister = sourceRegister;
+        this._destinationRegister = destinationRegister;
     }
 
     public decode(): string {
-        return `${CopyRegisterInstruction.OPCODE} $${this._sourcePointerRegister}, $${this._destinationPointerRegister}`;
+        return `${CopyRegisterInstruction.OPCODE} $${this._sourceRegister}, $${this._destinationRegister}`;
     }
 
     public encode(): number {
-        const args = [this._sourcePointerRegister, this._destinationPointerRegister, 0]
+        const args = [this._sourceRegister, this._destinationRegister, 0]
         return pack(CopyRegisterInstruction.HEAD, CopyRegisterInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const srcResolver = process.getRegisterResolver(RegisterType.Data, this._sourceRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const value = srcResolver.resolveGet(memory);
+        destResolver.resolveSet(memory, value);
+    }
 }
 

@@ -30,6 +30,15 @@ export class EndOfInterruptInstruction implements IInstruction {
         return pack(EndOfInterruptInstruction.HEAD, EndOfInterruptInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const jResolver = process.getRegisterResolver(RegisterType.JumpBack, this._interruptCode);
+        const address = jResolver.resolveGet(memory);
+        if (address === 0)
+            return;
+
+        const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
+        ipResolver.resolveSet(memory, address);
+        jResolver.resolveSet(memory, 0);
+    }
 }
 

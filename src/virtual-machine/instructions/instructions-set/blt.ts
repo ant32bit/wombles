@@ -38,12 +38,12 @@ export class BranchLessThanInstruction implements IInstruction {
         const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
 
-        const rhs = rhsResolver.resolveGet(memory);
-        const lhs = lhsResolver.resolveGet(memory);
+        const rhs = rhsResolver.resolveGetSigned(memory);
+        const lhs = lhsResolver.resolveGetSigned(memory);
 
         if (rhs < lhs) {
             const offsetResolver = process.getRegisterResolver(RegisterType.Data, this._offsetRegister);
-            const offset = offsetResolver.resolveGet(memory) + 0;
+            const offset = offsetResolver.resolveGetSigned(memory);
 
             const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
             const ip = ipResolver.resolveGet(memory);

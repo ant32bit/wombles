@@ -41,8 +41,8 @@ export class BinaryOrInstruction implements IInstruction {
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
         const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
 
-        const rhs = rhsResolver.resolveGet(memory) >>> 0;
-        const lhs = lhsResolver.resolveGet(memory) >>> 0;
+        const rhs = rhsResolver.resolveGet(memory);
+        const lhs = lhsResolver.resolveGet(memory);
 
         destResolver.resolveSet(memory, (rhs | lhs) >>> 0);
     }
