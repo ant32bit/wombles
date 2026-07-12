@@ -1,5 +1,7 @@
 import { expect } from "chai";
 import { InstructionDecoder, InstructionEncoder, SetInstructionPointerInstruction } from "../../../../src/virtual-machine/instructions";
+import { VirtualMachineFixture } from "./_fixture";
+import { ProcessMapping, RegisterType } from "../../../../src/virtual-machine/processor/process-mapping";
 
 describe("sip instruction", () => {
     it("can be decoded", () => {
@@ -19,4 +21,18 @@ describe("sip instruction", () => {
         expect(actual).instanceOf(SetInstructionPointerInstruction);
         expect(encoded).is.equals(0x02D1);
     });
+
+    it("can set the instruction pointer", () => {
+        const fixture = new VirtualMachineFixture();
+        const instruction = new SetInstructionPointerInstruction(1);
+
+        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
+
+        fixture.setInstruction(instruction);
+        fixture.setRegister(RegisterType.Data, 1, expectedAddress);
+        fixture.run();
+
+        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+        expect(actualResult).to.equal(expectedAddress);
+    })
 });

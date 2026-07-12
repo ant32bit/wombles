@@ -30,6 +30,11 @@ export class ProcessStartInstruction implements IInstruction {
         return pack(ProcessStartInstruction.HEAD, ProcessStartInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const pidResolver = process.getRegisterResolver(RegisterType.Data, this._pidRegister);
+        const pid = pidResolver.resolveGet(memory);
+
+        process.os.start(pid);
+    }
 }
 

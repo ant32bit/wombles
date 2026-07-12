@@ -36,13 +36,13 @@ export class LoadFromMemoryInstruction implements IInstruction {
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
         const srcRegResolver = process.getRegisterResolver(RegisterType.Data, this._sourcePointerRegister);
-        const destRegResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
 
         const srcAddress = srcRegResolver.resolveGet(memory);
         const srcResolver = new Memory8bitResolver(srcAddress);
 
         const value = srcResolver.resolveGet(memory);
-        destRegResolver.resolveSetByte(memory, this._destinationIndex, value);
+        destResolver.resolveSetByte(memory, this._destinationIndex, value);
     }
 }
 

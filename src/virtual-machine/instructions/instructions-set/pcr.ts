@@ -1,5 +1,5 @@
 import { RandomAccessMemory } from "../../memory/random-access-memory";
-import { RegisterType } from "../../processor";
+import { ProcessMapping, RegisterType } from "../../processor";
 import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
 import { pack } from "../packer"
@@ -17,23 +17,39 @@ export class ProcessCreateInstruction implements IInstruction {
 
     private _pointerRegister: number;
     private _pidRegister: number;
-    private _instructionOffsetRegister: number;
+    private _instructionPointerRegister: number;
 
-    constructor(pointerRegister: number, pidRegister: number, instructionOffsetRegister: number) {
+    constructor(pointerRegister: number, pidRegister: number, instructionPointerRegister: number) {
         this._pointerRegister = pointerRegister;
         this._pidRegister =pidRegister;
-        this._instructionOffsetRegister = instructionOffsetRegister;
+        this._instructionPointerRegister = instructionPointerRegister;
     }
 
     public decode(): string {
-        return `${ProcessCreateInstruction.OPCODE} $${this._pointerRegister}, $${this._pidRegister}, $${this._instructionOffsetRegister}`;
+        return `${ProcessCreateInstruction.OPCODE} $${this._pointerRegister}, $${this._pidRegister}, $${this._instructionPointerRegister}`;
     }
 
     public encode(): number {
-        const args = [this._pointerRegister, this._pidRegister, this._instructionOffsetRegister]
+        const args = [this._pointerRegister, this._pidRegister, this._instructionPointerRegister]
         return pack(ProcessCreateInstruction.HEAD, ProcessCreateInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const addrResolver = process.getRegisterResolver(RegisterType.Data, this._pointerRegister);
+        const pidResolver = process.getRegisterResolver(RegisterType.Data, this._pidRegister);
+        const ipResolver = process.getRegisterResolver(RegisterType.Data, this._instructionPointerRegister);
+
+        const newProcess = process.os.create();
+        if (newProcess == null) {
+            addrResolver.resolveSet(memory, 0);
+            pidResolver.resolveSet(memory, 0);
+            ipResolver.resolveSet(memory, 0);
+            return;
+        }
+
+        addrResolver.resolveSet(memory, newProcess.address);
+        pidResolver.resolveSet(memory, newProcess.processId);
+        ipResolver.resolveSet(memory, newProcess.address + ProcessMapping.INSTRUCTIONS_OFFSET);
+    }
 }
 

@@ -1,4 +1,4 @@
-import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Memory8bitResolver, RandomAccessMemory } from "../../memory/random-access-memory";
 import { RegisterType } from "../../processor";
 import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
@@ -34,6 +34,15 @@ export class StoreToMemoryInstruction implements IInstruction {
         return pack(StoreToMemoryInstruction.HEAD, StoreToMemoryInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const srcRegResolver = process.getRegisterResolver(RegisterType.Data, this._sourceRegister);
+        const destRegResolver = process.getRegisterResolver(RegisterType.Data, this._destinationPointerRegister);
+
+        const destAddress = destRegResolver.resolveGet(memory);
+        const destResolver = new Memory8bitResolver(destAddress);
+
+        const value = srcRegResolver.resolveGetByte(memory, this._sourceIndex);
+        destResolver.resolveSet(memory, value);
+    }
 }
 

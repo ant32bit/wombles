@@ -1,4 +1,4 @@
-import { RandomAccessMemory } from "../../memory/random-access-memory";
+import { Memory32bitResolver, RandomAccessMemory } from "../../memory/random-access-memory";
 import { RegisterType } from "../../processor";
 import { Process } from "../../processor/process";
 import { IInstruction } from "../instruction";
@@ -30,6 +30,16 @@ export class StackPushInstruction implements IInstruction {
         return pack(StackPushInstruction.HEAD, StackPushInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const spResolver = process.getRegisterResolver(RegisterType.StackPointer);
+        const srcResolver = process.getRegisterResolver(RegisterType.Data, this._sourceRegister);
+
+        const stackAddress = spResolver.resolveGet(memory) - 4;
+        const stackValue = srcResolver.resolveGet(memory);
+
+        const stackValueResolver = new Memory32bitResolver(stackAddress);
+        stackValueResolver.resolveSet(memory, stackValue);
+        spResolver.resolveSet(memory, stackAddress);
+    }
 }
 

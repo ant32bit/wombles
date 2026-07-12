@@ -34,6 +34,9 @@ export class ImmediateSetRegisterInstruction implements IInstruction {
         return pack(ImmediateSetRegisterInstruction.HEAD, ImmediateSetRegisterInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+        destResolver.resolveSetByte(memory, this._destinationIndex, this._immediateValue);
+    }
 }
 

@@ -35,6 +35,15 @@ export class SubtractionInstruction implements IInstruction {
         return pack(SubtractionInstruction.HEAD, SubtractionInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
+        const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const rhs = rhsResolver.resolveGetSigned(memory);
+        const lhs = lhsResolver.resolveGetSigned(memory);
+
+        destResolver.resolveSet(memory, rhs - lhs);
+    }
 }
 

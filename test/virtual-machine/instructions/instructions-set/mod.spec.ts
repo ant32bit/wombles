@@ -27,15 +27,15 @@ describe("mod instruction", () => {
         [8, 2, 0], [8, -2,  0], [-8, 2, 0], [-8, -2,  0]
     ])
         it("can modulus two numbers", () => {
-                const fixture = new VirtualMachineFixture();
-                const instruction = new ModulusInstruction(1, 2, 3);
+            const fixture = new VirtualMachineFixture();
+            const instruction = new ModulusInstruction(1, 2, 3);
 
-                fixture.setInstruction(instruction);
-                fixture.setRegister(RegisterType.Data, 1, i[0]);
-                fixture.setRegister(RegisterType.Data, 2, i[1]);
-                fixture.run();
+            fixture.setInstruction(instruction);
+            fixture.setRegister(RegisterType.Data, 1, i[0]);
+            fixture.setRegister(RegisterType.Data, 2, i[1]);
+            fixture.run();
 
-                const actualResult = fixture.getRegister(RegisterType.Data, 3);
-                expect(actualResult).to.equal(i[2] >>> 0);
-            });
+            const actualResult = fixture.getRegister(RegisterType.Data, 3);
+            expect(actualResult).to.equal(i[2] >>> 0);
+        });
 });

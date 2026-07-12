@@ -35,6 +35,15 @@ export class RightShiftInstruction implements IInstruction {
         return pack(RightShiftInstruction.HEAD, RightShiftInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
+        const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const rhs = rhsResolver.resolveGet(memory);
+        const lhs = lhsResolver.resolveGet(memory);
+
+        destResolver.resolveSet(memory, lhs >= 32 ? 0 : rhs >>> lhs);
+    }
 }
 
