@@ -48,7 +48,7 @@ describe("rsh instruction", () => {
         expect(actualResult).to.equal(0x00000001);
     });
 
-    it("rhs values higher than 31 produce 0", () => {
+    it("lhs values higher than 31 produce 0", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new RightShiftInstruction(1, 2, 3);
 
@@ -61,7 +61,7 @@ describe("rsh instruction", () => {
         expect(actualResult).to.equal(0x00000000);
     });
 
-    it("can treat lhs numbers as unsigned", () => {
+    it("can treat rhs numbers as unsigned", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new RightShiftInstruction(1, 2, 3);
 
@@ -74,7 +74,7 @@ describe("rsh instruction", () => {
         expect(actualResult).to.equal(0x00FFFFFF);
     });
 
-    it("can treat rhs numbers as unsigned", () => {
+    it("can treat lhs numbers as unsigned", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new RightShiftInstruction(1, 2, 3);
 

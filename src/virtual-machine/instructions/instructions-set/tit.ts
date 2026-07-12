@@ -32,6 +32,13 @@ export class TestIfTrueInstruction implements IInstruction {
         return pack(TestIfTrueInstruction.HEAD, TestIfTrueInstruction.PACK, args);
     }
 
-    public evaluate(memory: RandomAccessMemory, process: Process): void { }
+    public evaluate(memory: RandomAccessMemory, process: Process): void {
+        const testResolver = process.getRegisterResolver(RegisterType.Data, this._testRegister);
+        const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
+
+        const test = testResolver.resolveGet(memory);
+
+        destResolver.resolveSet(memory, test !== 0 ? 1 : 0);
+    }
 }
 

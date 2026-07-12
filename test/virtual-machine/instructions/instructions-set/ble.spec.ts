@@ -37,7 +37,7 @@ describe("ble instruction", () => {
         expect(actualResult).to.equal(expectedAddress);
     });
 
-    it("can branch if two lhs < rhs", () => {
+    it("can branch if two rhs < lhs", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new BranchLessOrEqualInstruction(1, 2, 3);
         const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
@@ -67,7 +67,7 @@ describe("ble instruction", () => {
         expect(actualResult).to.equal(expectedAddress);
     });
 
-    it("won't branch when lhs > rhs", () => {
+    it("won't branch when rhs > lhs", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new BranchLessOrEqualInstruction(1, 2, 3);
         const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 2;

@@ -15,33 +15,33 @@ export class BranchNotEqualInstruction implements IInstruction {
     public static PARSE(components: number[]): IInstruction { return new this(components[1], components[2], components[3]); }
     public static BUILD(variables: {x: number | null, y: number | null, z: number | null}): IInstruction { return new this(variables.x!, variables.y!, variables.z!); }
 
-    private _rhsRegister: number;
     private _lhsRegister: number;
+    private _rhsRegister: number;
     private _offsetRegister: number;
 
-    constructor(rhsRegister: number, lhsRegister: number, offsetRegister: number) {
-        this._rhsRegister = rhsRegister;
+    constructor(lhsRegister: number, rhsRegister: number, offsetRegister: number) {
         this._lhsRegister = lhsRegister;
+        this._rhsRegister = rhsRegister;
         this._offsetRegister = offsetRegister;
     }
 
     public decode(): string {
-        return `${BranchNotEqualInstruction.OPCODE} $${this._rhsRegister}, $${this._lhsRegister}, $${this._offsetRegister}`;
+        return `${BranchNotEqualInstruction.OPCODE} $${this._lhsRegister}, $${this._rhsRegister}, $${this._offsetRegister}`;
     }
 
     public encode(): number {
-        const args = [this._rhsRegister, this._lhsRegister, this._offsetRegister]
+        const args = [this._lhsRegister, this._rhsRegister, this._offsetRegister]
         return pack(BranchNotEqualInstruction.HEAD, BranchNotEqualInstruction.PACK, args);
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
-        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
+        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
 
-        const rhs = rhsResolver.resolveGet(memory);
         const lhs = lhsResolver.resolveGet(memory);
+        const rhs = rhsResolver.resolveGet(memory);
 
-        if (rhs !== lhs) {
+        if (lhs !== rhs) {
             const offsetResolver = process.getRegisterResolver(RegisterType.Data, this._offsetRegister);
             const offset = offsetResolver.resolveGetSigned(memory);
 

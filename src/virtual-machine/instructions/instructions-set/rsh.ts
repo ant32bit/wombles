@@ -16,34 +16,34 @@ export class RightShiftInstruction implements IInstruction {
     public static BUILD(variables: {x: number | null, y: number | null, z: number | null}): IInstruction { return new this(variables.x!, variables.y!, variables.z!); }
 
 
-    private _rhsRegister: number;
     private _lhsRegister: number;
+    private _rhsRegister: number;
     private _destinationRegister: number;
 
-    constructor(rhsRegister: number, lhsRegister: number, destinationRegister: number) {
-        this._rhsRegister = rhsRegister;
+    constructor(lhsRegister: number, rhsRegister: number, destinationRegister: number) {
         this._lhsRegister = lhsRegister;
+        this._rhsRegister = rhsRegister;
         this._destinationRegister = destinationRegister;
     }
 
     public decode(): string {
-        return `${RightShiftInstruction.OPCODE} $${this._rhsRegister}, $${this._lhsRegister}, $${this._destinationRegister}`;
+        return `${RightShiftInstruction.OPCODE} $${this._lhsRegister}, $${this._rhsRegister}, $${this._destinationRegister}`;
     }
 
     public encode(): number {
-        const args = [this._rhsRegister, this._lhsRegister, this._destinationRegister]
+        const args = [this._lhsRegister, this._rhsRegister, this._destinationRegister]
         return pack(RightShiftInstruction.HEAD, RightShiftInstruction.PACK, args);
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
-        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
+        const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
         const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
 
-        const rhs = rhsResolver.resolveGet(memory);
         const lhs = lhsResolver.resolveGet(memory);
+        const rhs = rhsResolver.resolveGet(memory);
 
-        destResolver.resolveSet(memory, lhs >= 32 ? 0 : rhs >>> lhs);
+        destResolver.resolveSet(memory, rhs >= 32 ? 0 : lhs >>> rhs);
     }
 }
 
