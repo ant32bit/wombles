@@ -22,37 +22,7 @@ describe("bge instruction", () => {
         expect(encoded).is.equals(0x884B);
     });
 
-    it("can branch if two registers are equal", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchGreaterOrEqualInstruction(1, 2, 3);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
-
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 600);
-        fixture.setRegister(RegisterType.Data, 2, 600);
-        fixture.setRegister(RegisterType.Data, 3, 5);
-        fixture.run();
-
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
-
-    it("can branch if two rhs > lhs", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchGreaterOrEqualInstruction(1, 2, 3);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
-
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 700);
-        fixture.setRegister(RegisterType.Data, 2, 600);
-        fixture.setRegister(RegisterType.Data, 3, 5);
-        fixture.run();
-
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
-
-    it("can branch to a negative offset", () => {
+    it("can jump to a negative offset", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new BranchGreaterOrEqualInstruction(1, 2, 3);
         const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET - 10;
@@ -67,19 +37,36 @@ describe("bge instruction", () => {
         expect(actualResult).to.equal(expectedAddress);
     });
 
-    it("won't branch when rhs < lhs", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchGreaterOrEqualInstruction(1, 2, 3);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 2;
+    for (const i of [[0, -1], [600, 600], [600, 300]])
+        it(`will jump becuase ${i[0]} ≥ ${i[1]}`, () => {
+            const fixture = new VirtualMachineFixture();
+            const instruction = new BranchGreaterOrEqualInstruction(1, 2, 3);
+            const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
 
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 300);
-        fixture.setRegister(RegisterType.Data, 2, 600);
-        fixture.setRegister(RegisterType.Data, 3, 5);
-        fixture.run();
+            fixture.setInstruction(instruction);
+            fixture.setRegister(RegisterType.Data, 1, i[0]);
+            fixture.setRegister(RegisterType.Data, 2, i[1]);
+            fixture.setRegister(RegisterType.Data, 3, 5);
+            fixture.run();
 
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
+            const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+            expect(actualResult).to.equal(expectedAddress);
+        });
+
+    for (const i of [[0, 1], [-600, 600]])
+        it(`won't jump becuase ${i[0]} < ${i[1]}`, () => {
+            const fixture = new VirtualMachineFixture();
+            const instruction = new BranchGreaterOrEqualInstruction(1, 2, 3);
+            const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 2;
+
+            fixture.setInstruction(instruction);
+            fixture.setRegister(RegisterType.Data, 1, i[0]);
+            fixture.setRegister(RegisterType.Data, 2, i[1]);
+            fixture.setRegister(RegisterType.Data, 3, 5);
+            fixture.run();
+
+            const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+            expect(actualResult).to.equal(expectedAddress);
+        });
 });
 

@@ -22,35 +22,22 @@ describe("bit instruction", () => {
         expect(encoded).is.equals(0x9848);
     });
 
-    it("can branch if register is true", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchIfTrueInstruction(1, 2);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
+    for (const i of [1, -1, 600, -600])
+        it(`will jump because ${i} is true`, () => {
+            const fixture = new VirtualMachineFixture();
+            const instruction = new BranchIfTrueInstruction(1, 2);
+            const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
 
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 1);
-        fixture.setRegister(RegisterType.Data, 2, 5);
-        fixture.run();
+            fixture.setInstruction(instruction);
+            fixture.setRegister(RegisterType.Data, 1, i);
+            fixture.setRegister(RegisterType.Data, 2, 5);
+            fixture.run();
 
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
+            const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+            expect(actualResult).to.equal(expectedAddress);
+        });
 
-    it("can branch to a negative offset", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchIfTrueInstruction(1, 2);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET - 10;
-
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 1);
-        fixture.setRegister(RegisterType.Data, 2, -5);
-        fixture.run();
-
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
-
-    it("won't branch when register is false", () => {
+    it("won't jump because 0 is false", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new BranchIfTrueInstruction(1, 2);
         const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 2;

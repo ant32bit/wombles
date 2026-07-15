@@ -23,7 +23,7 @@ describe("tit instruction", () => {
     });
 
     for (const i of [1, -1, 600, -600])
-        it(`can set to true because ${i} ≠ 0`, () => {
+        it(`can set to true because ${i} is true`, () => {
             const fixture = new VirtualMachineFixture();
             const instruction = new TestIfTrueInstruction(1, 2);
 
@@ -35,7 +35,7 @@ describe("tit instruction", () => {
             expect(actualResult).to.equal(1);
         });
 
-    it(`can set to false because 0 = 0`, () => {
+    it(`can set to false because 0 is false`, () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new TestIfTrueInstruction(1, 2);
 

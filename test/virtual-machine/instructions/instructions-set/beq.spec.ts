@@ -22,22 +22,7 @@ describe("beq instruction", () => {
         expect(encoded).is.equals(0x804B);
     });
 
-    it("can branch if two registers are equal", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchEqualInstruction(1, 2, 3);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
-
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 600);
-        fixture.setRegister(RegisterType.Data, 2, 600);
-        fixture.setRegister(RegisterType.Data, 3, 5);
-        fixture.run();
-
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
-
-    it("can branch to a negative offset", () => {
+    it("can jump to a negative offset", () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new BranchEqualInstruction(1, 2, 3);
         const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET - 10;
@@ -52,18 +37,35 @@ describe("beq instruction", () => {
         expect(actualResult).to.equal(expectedAddress);
     });
 
-    it("won't branch when registers are not equal", () => {
-        const fixture = new VirtualMachineFixture();
-        const instruction = new BranchEqualInstruction(1, 2, 3);
-        const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 2;
+    for (const i of [0, 600, -600])
+        it(`will jump because ${i} = ${i}`, () => {
+            const fixture = new VirtualMachineFixture();
+            const instruction = new BranchEqualInstruction(1, 2, 3);
+            const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 10;
 
-        fixture.setInstruction(instruction);
-        fixture.setRegister(RegisterType.Data, 1, 600);
-        fixture.setRegister(RegisterType.Data, 2, 300);
-        fixture.setRegister(RegisterType.Data, 3, 5);
-        fixture.run();
+            fixture.setInstruction(instruction);
+            fixture.setRegister(RegisterType.Data, 1, i);
+            fixture.setRegister(RegisterType.Data, 2, i);
+            fixture.setRegister(RegisterType.Data, 3, 5);
+            fixture.run();
 
-        const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
-        expect(actualResult).to.equal(expectedAddress);
-    });
+            const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+            expect(actualResult).to.equal(expectedAddress);
+        });
+
+    for (const i of [[0, -1], [600, -600]])
+        it(`won't jump because ${i[0]} ≠ ${i[1]}`, () => {
+            const fixture = new VirtualMachineFixture();
+            const instruction = new BranchEqualInstruction(1, 2, 3);
+            const expectedAddress = (fixture.process.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET + 2;
+
+            fixture.setInstruction(instruction);
+            fixture.setRegister(RegisterType.Data, 1, i[0]);
+            fixture.setRegister(RegisterType.Data, 2, i[1]);
+            fixture.setRegister(RegisterType.Data, 3, 5);
+            fixture.run();
+
+            const actualResult = fixture.getRegister(RegisterType.InstructionPointer);
+            expect(actualResult).to.equal(expectedAddress);
+        });
 });

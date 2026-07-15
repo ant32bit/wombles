@@ -22,7 +22,7 @@ describe("tif instruction", () => {
         expect(encoded).is.equals(0xBC48);
     });
 
-    it(`can set to true because 0 = 0`, () => {
+    it(`can set to true because 0 is false`, () => {
         const fixture = new VirtualMachineFixture();
         const instruction = new TestIfFalseInstruction(1, 2);
 
@@ -35,7 +35,7 @@ describe("tif instruction", () => {
     });
 
     for (const i of [1, -1, 600, -600])
-        it(`can set to false because ${i} ≠ 0`, () => {
+        it(`can set to false because ${i} is true`, () => {
             const fixture = new VirtualMachineFixture();
             const instruction = new TestIfFalseInstruction(1, 2);
 
