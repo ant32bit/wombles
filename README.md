@@ -1,39 +1,93 @@
 
-Core VM:
+# Purpose
 
-    Instruction decoder — 16 bit to Op struct
-    Instruction encoder — Op struct to 16 bit (dev tool)
-    Register file — per process state
-    Memory space — flat 8MB Uint8Array
-    Instruction pointer management
-    Instruction executor — one tick per instruction
+Wombles are small programs that run in a virtual machine. They are an experiment into the theory of evolution and survival of the fittest.
+Wombles don't try to emulate evolution exactly but cover a few important areas.
+- A womble's only purpose is to create copies of itself.
+- There is limited resources to complete this task (fixed memory size, capped execution time)
+- The instructions it uses to copy memory are unstable and can cause minor mutations.
+- These mutations cause the next generation of wombles to be different from the previous generation.
+- Changes in behaviour affect the "suitability" of the womble.
 
-Memory management:
+There are specific design choices that differ from normal computer hardware to facilitate evolution.
+- Exactly what suitability means is purposefully not defined. Suitability should emerge naturally.
+- The memory system is insecure (ie all memory is accessible by all wombles.)
+- The are no virtual addresses, all addresses must fit into 31-bit space.
+- Registries and instructions sit in accessible RAM able to be modified by anyone.
+- The OS sits outside the memory space and cannot be modified by running wombles.
+- `cpm` and `imp` functions are volatile and may not work as expected.
+  - `cpm` may copy from an adjacent byte
+  - `cpm` may copy to an adjacent byte
+  - `ism` may increment by -1 to 2 incrememts with 1 increment being most likely.
 
-    Process memory layout — registers, genome, stack in one chunk
-    Heap allocator — mrq, mfr against the unallocated sea
-    Heap free and defragmentation
+# Memory
 
-Process management:
+The memory space is a large array of bytes that represent the randomly accessible memory (RAM) of the virtual machine.
 
-    Process table — OS level, not addressable
-    Process creation — pcr, pst, genome scanning for bei/eoi
-    Process scheduler — tick distribution across processes
-    Process death — end, kill, stack overflow, illegal instruction
+The whole memory space is divided into frames. A memory address is defined by how many bits are used to index the frames and how many bits are used to index the memory within a frame.
 
-Interrupt system:
+As an example, a RAM(13,10) will use 13 bits to represent the frames, so there will be 8,192 addressable frames. And 10 bits are used for indexing within a frame, so there is 1,024 bytes available within the frame. This memory space would be 8Mb in total.
 
-    bei/eoi scanning on process start
-    Interrupt dispatch — exi
-    Interrupt return — eoi
+## Memory Addresses
 
-Logging:
+Memory addresses are represented as 32bit unsigned integer.
+```
+[1] [00000 000] [00000 00000 001] [00000 00011]
+ ^           ^                 ^             ^
+ is_valid    filler (all 0s)   frame_index   memory_index
+```
+In the above example this is a valid address, pointing to the second frame (zero based indexing), and the threeth memory address (also zero based).
 
-    Event types
-    postMessage interface
+The validation bit allows us to continue to keep 0 as the null pointer.
 
+In order for mutations to work, all addresses with a 0 for the highest bit are considered null pointers (this should be more likely considered a "reserved space").
 
-# Process:
+Also when evaluating an address any non-zero filler is ignored.
+
+## Frame Types
+
+Typically, frames are all free at the start of proessing except one.
+
+3 types of frame:
+
+| Frame Type | Owner | Description |
+| --- | --- | --- |
+| Free | None | This is an unused frame |
+| Process | Itself | This is a process |
+| Heap | System | This is reserved memory for divying up and allocating |
+
+### Ownership
+
+Memory is typically owned as a way of keeping track of who is using what pieces of memory.
+
+A process is owned by the parent that created it until it is running. Then it is owned by itself.
+
+A heap is owned by the system, but when an allocation is requested using `mrq` a piece of that is divvied and marked as "owned" by the requesting process.
+
+Ownership has three purposes
+- Blocks other processes from freeing that memory
+- Allows all memory owned by a process to be freed when it is terminated.
+- Stops the system from freeing a heap or providing that memory block to another process.
+
+Ownership does not prevent reads and writes to a memory address.
+
+# Processor
+
+The virtual machine processor is more like and OS and CPU combined. This allows some instructions to handle more OS level duties like loading and starting an application or executing interrupt behaviour.
+
+## Registers
+
+There are 5 types of registers in the system.
+
+| Register Type | Purpose |
+| --- | --- |
+| Zero Register | This is a virtual register that always holds the value 0 and writing to it is basically a no-op |
+| Data Registers | 15 data registers that the womble can use for processing. The 15th register also serves as a special data register that is used for OS level communication to the program (ie interrupt data)
+| Interrupt Registers | These hold the instruction address to go to execute instructions during an interrupt. |
+| Jump Back Registsers | During an interrupt these registers hold the value of the instruction pointer before the womble jumped to the interrupt instructions or a null pointer if there is nothing to jump back to. |
+| Pointers | This includes the stack pointer pointing to the top of the stack. and the instruction pointer that points to the current executing instruction. |
+
+## Anatomy of a Process
 
 | Name | Offset | Size | Justification | Notes |
 | --- | --- | --- | --- | --- |
@@ -47,7 +101,7 @@ Logging:
 | Instruction Start | 132 | 892 | 1024 process allocation – 132 register bytes | All instructions of the program
 | Initial Stack Position | 1024 | 0 | | SP initial value
 
-# Instruction Set:
+## Instruction Set
 
 ```
 00xxxxxxxxxxxxxx - system operations
