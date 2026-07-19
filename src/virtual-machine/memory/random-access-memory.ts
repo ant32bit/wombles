@@ -66,6 +66,10 @@ export class RandomAccessMemory {
         return this.frameSize;
     }
 
+    public isValidAddress(address: number): boolean {
+        return ((address >>> 0) & 0x80000000) > 0;
+    }
+
     public readNumber(pointer: number, size: number): number {
         const bytes: number[] = [];
 

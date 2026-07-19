@@ -8,6 +8,7 @@ export class CentralProcessingUnit {
 
     private processes: {[processKey: string]: Process};
     private memory: RandomAccessMemory;
+    private triggeredInterrupts: {code: number, value: number}[] = [];
 
     constructor(memory: RandomAccessMemory) {
         this.memory = memory;
@@ -22,7 +23,8 @@ export class CentralProcessingUnit {
         const authenticatedOperations: ISystemOperations = {
             create: (() => this.createProcess(processDefinition.processId)).bind(this),
             start: ((pid: number) => this.startProcess(processDefinition.processId, pid)).bind(this),
-            kill: ((pid: number) => this.killProcess(pid)).bind(this)
+            kill: ((pid: number) => this.killProcess(pid)).bind(this),
+            interrupt: ((code: number, value: number) => this.queueInterrupt(code, value)).bind(this)
         };
 
         const process = new Process(processDefinition, authenticatedOperations);
@@ -93,12 +95,49 @@ export class CentralProcessingUnit {
         delete this.processes[processKey];
     }
 
+    public queueInterrupt(interruptCode: number, interruptValue: number) {
+        this.triggeredInterrupts.push({
+            code: interruptCode,
+            value: interruptValue
+        });
+    }
+
     public performTick() {
-        for (const process of Object.values(this.processes)) {
-            if (process.isKilled())
+        const processes = Object.values(this.processes).filter(p => !p.isKilled());
+
+        while (this.triggeredInterrupts.length > 0) {
+            const interrupt = this.triggeredInterrupts.shift()!;
+            if (interrupt.code < 0 || interrupt.code > 7)
                 continue;
 
-            const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
+            for (const process of processes) {
+                const iResolver = process.getRegisterResolver(RegisterType.Interrupt, interrupt.code);
+
+                const interruptStart = iResolver.resolveGet(this.memory);
+                if (!this.memory.isValidAddress(interruptStart))
+                    continue;
+
+                const jResolver = process.getRegisterResolver(RegisterType.JumpBack, interrupt.code);
+                if (jResolver.resolveGet(this.memory) !== 0x00000000)
+                    continue;
+
+                // put the current ip into the jumpback register
+                const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
+                const currPointer = ipResolver.resolveGet(this.memory);
+                jResolver.resolveSet(this.memory, currPointer);
+
+                // set the ip as the interrupt pointer
+                const newPointer = iResolver.resolveGet(this.memory);
+                ipResolver.resolveSet(this.memory, newPointer);
+
+                // set $15 to the interrupt value
+                const vResolver = process.getRegisterResolver(RegisterType.Data, 15);
+                const clampedValue = (interrupt.value >>> 0) & 0xFFFFFFFF;
+                vResolver.resolveSet(this.memory, clampedValue);
+            }
+        }
+
+        for (const process of processes) {const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
             const instructionAddress = ipResolver.resolveGet(this.memory) >>> 0;
             const instructionResolver = new Memory16bitResolver(instructionAddress);
             const instructionRaw = instructionResolver.resolveGet(this.memory);
@@ -112,16 +151,19 @@ export class CentralProcessingUnit {
         }
     }
 
-    public dump(): { processes: [number, number, string][], registers: [string, number[]][][] } {
-        const dump: { processes: [number, number, string][], registers: [string, number[]][][] } = {
+    public dump(): { processes: [number, number, string][], registers: [string, number[]][][], interrupts: [number, number][] } {
+        const dump: { processes: [number, number, string][], registers: [string, number[]][][], interrupts: [number, number][] } = {
             processes: [],
-            registers: []
+            registers: [],
+            interrupts: []
         };
 
         for (const process of Object.values(this.processes)) {
             dump.processes.push(process.dump());
             dump.registers.push(this.dumpRegisters(process));
         }
+
+        dump.interrupts = this.triggeredInterrupts.map(i => [i.code, i.value]);
 
         return dump;
     }

@@ -6,6 +6,7 @@ export interface ISystemOperations {
     create(): IProcessDefinition | null;
     start(pid: number): void;
     kill(pid: number): void;
+    interrupt(code: number, value: number): void
 }
 
 export class Process {

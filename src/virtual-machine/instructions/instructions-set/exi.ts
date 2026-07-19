@@ -31,7 +31,10 @@ export class ExecuteInterruptInstruction implements IInstruction {
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
-        /// TODO: Implement Interrupt System Calls
+        var vResolver = process.getRegisterResolver(RegisterType.Data, 15);
+        var value = vResolver.resolveGet(memory);
+
+        process.os.interrupt(this._interruptCode, value);
     }
 }
 
