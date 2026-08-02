@@ -2,7 +2,7 @@
   "name": "wombles",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/transpiled/src/main.js",
+  "main": "./dist/transpiled/src/console.js",
   "directories": {
     "test": "./dist/transpiled/test"
   },
