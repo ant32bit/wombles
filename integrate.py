@@ -17,7 +17,7 @@ def make_root_files(env):
     root_template = 'root-template/'
     www_root = env + 'www-root/'
 
-    js_bundles = ['console.js', 'internal.js']
+    bundles = ['main.css', 'console.js', 'internal.js']
     html_files = ['index.html', 'internal.html']
 
     if os.path.exists(www_root):
@@ -28,12 +28,13 @@ def make_root_files(env):
 
     other_files = { }
 
-    for bundle in js_bundles:
+    for bundle in bundles:
         loc = env + bundle
-        new_js = get_file_hash(loc) + '.js'
-        print(f'copying {bundle} as {new_js}')
-        shutil.copyfile(loc, www_root + new_js)
-        other_files[bundle] = new_js
+        ext = os.path.splitext(bundle)[1]
+        new_file = get_file_hash(loc) + ext
+        print(f'copying {bundle} as {new_file}')
+        shutil.copyfile(loc, www_root + new_file)
+        other_files[bundle] = new_file
 
     for file in os.listdir(root_template):
         if file not in html_files:

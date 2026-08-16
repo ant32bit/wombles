@@ -1,0 +1,37 @@
+#snapshot-display {
+
+    &.hidden {
+        display: none;
+    }
+
+    #memory {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+
+    #control-panel {
+        display: flex;
+        padding: 10px 0;
+        margin: 0 10px;
+        border-top: 1px solid #444;
+
+        .spacer {
+            flex: 1;
+        }
+
+        .counter {
+            margin-left: 10px;
+            padding: 3px;
+            color: #aaa;
+            font: 12px sans-serif;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+
+            span {
+                width: 80px;
+                display: inline-block;
+                text-align: right;
+            }
+        }
+    }
+}
