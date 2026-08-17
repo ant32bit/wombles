@@ -2,7 +2,9 @@ import { IEventHandler, IPostable } from "../interfaces";
 import { StartupRequest, StartupResponse, TickCompletedEvent } from "../events";
 
 type RouteMap = {
-    'startup': { request: StartupRequest, response: StartupResponse }
+    'startup': { request: StartupRequest, response: StartupResponse },
+    'start': { request: null, response: boolean },
+    'pause': { request: null, response: boolean }
 }
 
 type Subscriptions = {
@@ -57,6 +59,7 @@ export class EventManager {
         this.receiver = receiver;
 
         transmitter.addEventListener('message', async (event: Event) => {
+            console.log(event);
             const subscriptionEvent = (event as MessageEvent<SubscriptionEventEnvelope>)?.data;
             if (subscriptionEvent && subscriptionEvent.subscription != null) {
                 const subscriptions = this.subscribers.get(subscriptionEvent.subscription);

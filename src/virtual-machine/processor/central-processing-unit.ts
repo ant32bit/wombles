@@ -151,6 +151,13 @@ export class CentralProcessingUnit {
         }
     }
 
+    public count(): number {
+        return Object
+            .values(this.processes)
+            .filter(p => p.isStarted)
+            .length;
+    }
+
     public dump(): { processes: [number, number, string][], registers: [string, number[]][][], interrupts: [number, number][] } {
         const dump: { processes: [number, number, string][], registers: [string, number[]][][], interrupts: [number, number][] } = {
             processes: [],

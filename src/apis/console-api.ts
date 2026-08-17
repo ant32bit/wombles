@@ -6,7 +6,7 @@ import { RandomAccessMemory } from '../virtual-machine/memory';
 import { CentralProcessingUnit } from '../virtual-machine/processor';
 import { compile } from '../virtual-machine/instructions/compiler';
 
-export type VirtualMachinePointer = { instance: VirtualMachine | null }
+export type VirtualMachinePointer = { instance?: VirtualMachine }
 
 export class ConsoleAPI {
 
@@ -16,7 +16,9 @@ export class ConsoleAPI {
     constructor(transmitter: IEventHandler, reciever: IPostable, vmPointer: VirtualMachinePointer) {
         this.virtualMachinePointer = vmPointer;
         this.eventManager = new EventManager(transmitter, reciever, {
-            'startup': this.onStartup.bind(this)
+            'startup': this.onStartup.bind(this),
+            'start': this.onStart.bind(this),
+            'pause': this.onPause.bind(this),
         });
     }
 
@@ -31,11 +33,32 @@ export class ConsoleAPI {
 
             const program = compile(request.initialWomble);
             vm.addProgram(program);
+
+            this.virtualMachinePointer.instance = vm;
         }
         catch (e) {
             error = (e as Error).message;
         }
 
         return new StartupResponse(memory?.export(), error);
+    }
+
+    private onStart(request: null): boolean {
+        console.log(this);
+        if (!this.virtualMachinePointer.instance)
+            return false;
+
+        this.virtualMachinePointer.instance.start((event => {
+            this.eventManager.emit("tickCompleted", event);
+        }));
+        return true;
+    }
+
+    private onPause(request: null): boolean {
+        if (!this.virtualMachinePointer.instance)
+            return false;
+
+        this.virtualMachinePointer.instance!.pause();
+        return true;
     }
 }

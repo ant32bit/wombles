@@ -9,7 +9,9 @@ export class InternalAPI {
 
     constructor(transmitter: IEventHandler, reciever: IPostable) {
         this.eventManager = new EventManager(transmitter, reciever, {
-            'startup': undefined
+            'startup': undefined,
+            'start': undefined,
+            'pause': undefined,
         });
     }
 
@@ -19,6 +21,14 @@ export class InternalAPI {
             throw new Error(response.errors || "unknown error");
 
         return response.memory;
+    }
+
+    public async start(): Promise<void> {
+        const response = await this.eventManager.request('start', null);
+    }
+
+    public async pause(): Promise<void> {
+        const response = await this.eventManager.request('pause', null);
     }
 
     public async addTickListener(callback: (event: TickCompletedEvent) => void) {

@@ -17,7 +17,6 @@ export class Logger {
     public clearLogs(): void {
         this.readBuffers = [];
         this.writeBuffers = [];
-        this.startSession();
     }
 
     public popLogs(): Logs {
@@ -26,22 +25,18 @@ export class Logger {
             writes: this.writeBuffers.pop()?.toWriteLogs() || []
         }
 
-        if (this.readBuffers.length == 0) {
-            this.readBuffers.unshift(new ReadBuffer());
-        }
-
-        if (this.writeBuffers.length == 0) {
-            this.writeBuffers.unshift(new WriteBuffer());
-        }
-
         return logs;
     }
 
     public logRead(index: number): void {
+        if (this.readBuffers.length < 1)
+            return;
         this.readBuffers[0].log(index);
     }
 
     public logWrite(index: number, value: number): void {
+        if (this.writeBuffers.length < 1)
+            return;
         this.writeBuffers[0].log(index, value);
     }
 }

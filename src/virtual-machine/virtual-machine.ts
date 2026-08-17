@@ -1,6 +1,7 @@
 import { CentralProcessingUnit, ProcessMapping } from './processor';
 import { IProcessDefinition, RandomAccessMemory } from './memory';
 import { CannotAddProcessError } from './virtual-machine-errors';
+import { TickCompletedEvent, TickListener } from '../events';
 
 const SystemProcess: number = 1;
 
@@ -10,6 +11,8 @@ enum VMState {
     Running,
 }
 
+
+
 export class VirtualMachine {
 
     private systemProcesses: IProcessDefinition[] = [];
@@ -18,13 +21,17 @@ export class VirtualMachine {
     private memory: RandomAccessMemory;
     private state: VMState = VMState.Stopped;
     private ticks: number = 0;
+    private tickListener?: TickListener;
 
     constructor(processor: CentralProcessingUnit, memory: RandomAccessMemory) {
         this.processor = processor;
         this.memory = memory;
     }
 
-    public start() {
+    public start(callback?: TickListener) {
+        if (callback)
+            this.tickListener = callback;
+
         if (this.state === VMState.Running)
             return;
 
@@ -34,7 +41,8 @@ export class VirtualMachine {
             }
         }
 
-        setTimeout(this.run, 0);
+        this.state = VMState.Running;
+        setTimeout(this.run.bind(this), 0);
     }
 
     public pause() {
@@ -66,12 +74,20 @@ export class VirtualMachine {
         if (this.state != VMState.Running)
             return;
 
+        this.memory.startNewSession();
         this.processor.performTick();
         this.ticks++;
-        setTimeout(this.report, 0);
+        setTimeout(this.report.bind(this), 0);
     }
 
     private report() {
-        setTimeout(this.run);
+        const tick = this.ticks;
+        const programs = this.processor.count();
+        const changes = this.memory.popSessionLogs();
+
+        if (this.tickListener)
+            this.tickListener(new TickCompletedEvent(tick, programs, changes));
+
+        setTimeout(this.run.bind(this));
     }
 }
