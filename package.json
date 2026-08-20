@@ -2,13 +2,15 @@
   "name": "wombles",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/transpiled/src/main.js",
+  "main": "./dist/transpiled/src/console.js",
   "directories": {
     "test": "./dist/transpiled/test"
   },
   "scripts": {
+    "transpile-js": "tsc && webpack",
+    "transpile-css": "sass --no-source-map --style=compressed styles/main.scss dist/main.css",
     "test": "mocha dist/transpiled/test/**/*.js",
-    "build": "rm -rf dist && tsc && webpack && python3 integrate.py && npm run test",
+    "build": "rm -rf dist && npm run transpile-js && npm run transpile-css && python3 integrate.py && npm run test",
     "serve": "python3 -m http.server --directory dist/www-root 4600"
   },
   "keywords": [],
@@ -22,6 +24,7 @@
     "chai": "^6.2.2",
     "jsdom": "^29.1.1",
     "mocha": "^11.7.6",
+    "sass": "^1.102.0",
     "sinon": "^22.0.0",
     "typescript": "^6.0.3",
     "webpack": "^5.107.2",

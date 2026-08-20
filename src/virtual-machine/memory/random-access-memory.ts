@@ -1,3 +1,5 @@
+import { Logger } from "./logger";
+import { Logs } from "./logs";
 import { HeapAllocation } from "./heap-allocation";
 import { ProcessAllocation } from "./process-allocation";
 
@@ -33,6 +35,8 @@ export class RandomAccessMemory {
 
     private nextProcessId: number = 2;
 
+    private logger: Logger;
+
     constructor(memoryIndexBits: number, frameIndexBits: number) {
         if (memoryIndexBits + frameIndexBits > 31) {
             throw new RangeError('Memory must be able to fit in 31 bits (2Gb addressable space)')
@@ -60,6 +64,8 @@ export class RandomAccessMemory {
 
         this.heaps = [];
         this.processes = [];
+
+        this.logger = new Logger();
     }
 
     public getFrameSizeInBytes(): number {
@@ -70,14 +76,15 @@ export class RandomAccessMemory {
         return ((address >>> 0) & 0x80000000) > 0;
     }
 
-    public readNumber(pointer: number, size: number): number {
+    public readNumber(address: number, size: number): number {
         const bytes: number[] = [];
 
         for (let offset = 0; offset < size; offset++) {
-            const address = this.validAddress(pointer, offset);
-            if (address < 0)
+            const index = this.validAddress(address, offset);
+            if (index < 0)
                 break;
-            bytes.push(this.memoryArray[address]);
+            bytes.push(this.memoryArray[index]);
+            this.logger.logRead(index);
         }
 
         let output: number = 0;
@@ -88,13 +95,14 @@ export class RandomAccessMemory {
         return output >>> 0;
     }
 
-    public writeNumber(pointer: number, size: number, value: number): void {
+    public writeNumber(address: number, size: number, value: number): void {
         for (let offset = 0; offset < size; offset++) {
-            const address = this.validAddress(pointer, offset);
-            if (address < 0)
+            const index = this.validAddress(address, offset);
+            if (index < 0)
                 break;
             const byte = (value >>> ((size - 1 - offset) << 3)) & 0x000000FF;
-            this.memoryArray[address] = byte;
+            this.memoryArray[index] = byte;
+            this.logger.logWrite(index, byte);
         }
     }
 
@@ -168,6 +176,18 @@ export class RandomAccessMemory {
             if (heap.unreserve(ownerId, address))
                 break;
         }
+    }
+
+    public startNewSession(): void {
+        this.logger.startSession();
+    }
+
+    public popSessionLogs(): Logs {
+        return this.logger.popLogs();
+    }
+
+    public export(): Uint8Array {
+        return new Uint8Array([...this.memoryArray]);
     }
 
     public dump(): { frames: string, processes: [number, number, number][], heaps: [number, number, number][][] } {

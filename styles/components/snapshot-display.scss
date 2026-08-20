@@ -1,0 +1,44 @@
+#snapshot-display {
+
+    &.hidden {
+        display: none;
+    }
+
+    .memory-frame {
+        margin: 10px;
+        height: 500px;
+        width: calc(100% - 20px);
+        overflow-y: scroll;
+    }
+
+    #memory-representation {
+        height: 500px;
+        image-rendering: pixelated;
+    }
+
+    #control-panel {
+        display: flex;
+        padding: 10px 0;
+        margin: 0 10px;
+        border-top: 1px solid #444;
+
+        .spacer {
+            flex: 1;
+        }
+
+        .counter {
+            margin-left: 10px;
+            padding: 3px;
+            color: #aaa;
+            font: 12px sans-serif;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+
+            span {
+                width: 80px;
+                display: inline-block;
+                text-align: right;
+            }
+        }
+    }
+}

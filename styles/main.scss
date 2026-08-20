@@ -1,0 +1,10 @@
+@use "./components//params-ui.scss";
+@use "./components/snapshot-display.scss";
+
+body {
+    background-color: #222;
+}
+
+#virtual-machine {
+    display: none;
+}

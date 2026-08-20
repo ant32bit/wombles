@@ -4,9 +4,69 @@
     <title>ant32bit.dev</title>
     <link rel="shortcut icon" type="image/png" href="{{favicon.png}}"/>
     <link rel="stylesheet" type="text/css" href="{{main.css}}"></link>
-    <script src="{{bundle.js}}"></script>
+    <script src="https://kit.fontawesome.com/f0e979dbc7.js" crossorigin="anonymous"></script>
+    <script src="{{console.js}}"></script>
 </head>
 <body>
-
+    <form id="start-params">
+        <label>Initial Womble</label>
+        <textarea id="code" name="initial-womble"></textarea>
+        <div id="memory-params">
+            <div class="param">
+                <label>Memory Capacity</label>
+                <select name="memory-size">
+                    <option value="20" >1 MB</option>
+                    <option value="21">2 MB</option>
+                    <option value="22">4 MB</option>
+                    <option value="23" selected>8 MB</option>
+                    <option value="24">16 MB</option>
+                    <option value="25">32 MB</option>
+                    <option value="26">64 MB</option>
+                    <option value="27">128 MB</option>
+                    <option value="28">256 MB</option>
+                    <option value="29">512 MB</option>
+                    <option value="30">1 GB</option>
+                    <option value="31">2 GB</option>
+                </select>
+            </div>
+            <div class="param">
+                <label>Program Size</label>
+                <select name="program-size">
+                    <option value="8">256 B</option>
+                    <option value="9">512 B</option>
+                    <option value="10" selected>1 kB</option>
+                    <option value="11">2 kB</option>
+                    <option value="12">4 kB</option>
+                    <option value="13">8 kB</option>
+                    <option value="14">16 kB</option>
+                    <option value="15">32 kB</option>
+                    <option value="16">64 kB</option>
+                    <option value="17">128 kB</option>
+                    <option value="18">256 kB</option>
+                </select>
+            </div>
+            <div class="submit">
+                <input type="submit" id="submit" value="Start" disabled>
+            </div>
+        </div>
+    </form>
+    <div id="snapshot-display" class="hidden">
+        <div class="memory-frame">
+            <canvas id="memory-representation"></canvas>
+        </div>
+        <div id="control-panel">
+            <div class="actions">
+                <button id="start"><i class="fa-solid fa-play"></i></button>
+                <button id="pause" disabled><i class="fa-solid fa-pause"></i></button>
+            </div>
+            <div class="spacer"></div>
+            <div class="counter">
+                <i class="fa-solid fa-stopwatch"></i> <span id="tick-counter"> 0</span>
+            </div>
+            <div class="counter">
+                <i class="fa-solid fa-window-restore"></i> <span id="program-counter"> 0</span>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
