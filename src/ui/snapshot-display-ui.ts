@@ -18,11 +18,21 @@ export class SnapshotDisplayUI {
     }
 
     public onstart(callback: () => void): void {
-        this.start.onclick = callback;
+        this.start.onclick = (ev) => {
+            ev.preventDefault();
+            this.start.disabled = true;
+            this.pause.disabled = false;
+            callback();
+        }
     }
 
     public onpause(callback: () => void): void {
-        this.pause.onclick = callback;
+        this.pause.onclick = (ev) => {
+            ev.preventDefault();
+            this.pause.disabled = true;
+            this.start.disabled = false;
+            callback();
+        }
     }
 
     public update(tickDetails: TickCompletedEvent): void {

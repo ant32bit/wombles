@@ -59,7 +59,6 @@ export class EventManager {
         this.receiver = receiver;
 
         transmitter.addEventListener('message', async (event: Event) => {
-            console.log(event);
             const subscriptionEvent = (event as MessageEvent<SubscriptionEventEnvelope>)?.data;
             if (subscriptionEvent && subscriptionEvent.subscription != null) {
                 const subscriptions = this.subscribers.get(subscriptionEvent.subscription);

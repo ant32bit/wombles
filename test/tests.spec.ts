@@ -62,6 +62,7 @@ describe("virtual machine", () => {
         require("./virtual-machine/memory/random-access-memory.spec");
         require("./virtual-machine/memory/process-allocation.spec");
         require("./virtual-machine/memory/heap-allocation.spec");
+        require("./virtual-machine/memory/logger.spec");
     });
 
     describe("processing", () => {

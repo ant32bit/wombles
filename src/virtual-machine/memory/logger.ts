@@ -52,13 +52,13 @@ class ReadBuffer {
         if (this.readIndexes.length === 0)
             return [];
 
-        const orderedReads = [...this.readIndexes].sort();
+        const orderedReads = [...this.readIndexes].sort((a, b) => a - b);
         const readLogs: ReadLog[] = [];
 
         let currLog = { address: orderedReads[0], size: 1 };
         readLogs.push(currLog);
 
-        for (let i = 1; i <= orderedReads.length; i++) {
+        for (let i = 1; i < orderedReads.length; i++) {
             const prev = orderedReads[i - 1];
             const curr = orderedReads[i];
             const diff = curr - prev;
@@ -108,10 +108,10 @@ class WriteBuffer {
 
         const writeLogs: [number, number[]][] = [];
         let address: number = writes[0].index;
-        let changes: number[] = []
+        let changes: number[] = [writes[0].value];
         writeLogs.push([address, changes]);
 
-        for (let i = 1; i <= writes.length; i++) {
+        for (let i = 1; i < writes.length; i++) {
             const prev = writes[i - 1];
             const curr = writes[i];
             const diff = curr.index - prev.index;
@@ -122,7 +122,7 @@ class WriteBuffer {
             }
 
             address = curr.index;
-            changes = [];
+            changes = [curr.value];
             writeLogs.push([address, changes]);
         }
 

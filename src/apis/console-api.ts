@@ -44,7 +44,6 @@ export class ConsoleAPI {
     }
 
     private onStart(request: null): boolean {
-        console.log(this);
         if (!this.virtualMachinePointer.instance)
             return false;
 

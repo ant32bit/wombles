@@ -20,7 +20,6 @@ async function main() {
     });
 
     api.addTickListener((event) => {
-        console.log(event);
         display.update(event);
         memory?.update(event);
     });
@@ -29,6 +28,4 @@ async function main() {
     display.onpause(() => { api.pause(); });
 
     form.enable(true);
-
-
 }

@@ -31,11 +31,26 @@ export class MemoryRepresentationUI {
             });
         }
 
-        this.draw(256);
+        this.draw(0);
     }
 
     public update(tickDetails: TickCompletedEvent) {
+        for (const writeLog of tickDetails.changes.writes) {
+            for(let i = 0; i < writeLog.changes.length; i++) {
+                var index = writeLog.address + i;
+                this.memoryState[index].value = writeLog.changes[i];
+                this.memoryState[index].tickLastChanged = tickDetails.tick;
+            }
+        }
 
+        for (const readLog of tickDetails.changes.reads) {
+            for(let i = 0; i < readLog.size; i++) {
+                var index = readLog.address + i;
+                this.memoryState[index].tickLastAccessed = tickDetails.tick;
+            }
+        }
+
+        this.draw(tickDetails.tick)
     }
 
     private draw(t: number) {

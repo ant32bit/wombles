@@ -4,9 +4,16 @@
         display: none;
     }
 
-    #memory-representation {
+    .memory-frame {
         margin: 10px;
+        height: 500px;
         width: calc(100% - 20px);
+        overflow-y: scroll;
+    }
+
+    #memory-representation {
+        height: 500px;
+        image-rendering: pixelated;
     }
 
     #control-panel {
