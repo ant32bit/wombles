@@ -1,10 +1,12 @@
 @use "./components//params-ui.scss";
 @use "./components/snapshot-display.scss";
+@use "./components/processes-display.scss";
 
 body {
     background-color: #222;
+    font: 16px sans-serif;
 }
 
-#virtual-machine {
-    display: none;
+.hidden {
+    display: none !important;
 }

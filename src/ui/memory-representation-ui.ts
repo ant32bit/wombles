@@ -50,7 +50,7 @@ export class MemoryRepresentationUI {
             }
         }
 
-        this.draw(tickDetails.tick)
+        this.draw(tickDetails.tick);
     }
 
     private draw(t: number) {

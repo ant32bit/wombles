@@ -3,6 +3,7 @@ import { ProcessMapping, RegisterType } from "./process-mapping";
 import { ISystemOperations, Process } from "./process";
 import * as Decoder from "../instructions/decoder";
 import { BeginInterruptInstruction } from "../instructions/instructions-set";
+import { CurrentlyLoadedProcess } from "../../events";
 
 export class CentralProcessingUnit {
 
@@ -151,11 +152,21 @@ export class CentralProcessingUnit {
         }
     }
 
-    public count(): number {
+    public getProcess(processId: number): IProcessDefinition | undefined {
+        return this.processes[this.generateProcessKey(processId)]?.getProcessDefinition();
+    }
+
+    public getProcesses(): CurrentlyLoadedProcess[] {
         return Object
             .values(this.processes)
-            .filter(p => p.isStarted)
-            .length;
+            .map(p => {
+                const def = p.getProcessDefinition();
+                return {
+                    processId: def.processId,
+                    address: (def.address & 0x7FFFFFFF) >>> 0,
+                    isStarted: p.isStarted()
+                }
+            });
     }
 
     public dump(): { processes: [number, number, string][], registers: [string, number[]][][], interrupts: [number, number][] } {

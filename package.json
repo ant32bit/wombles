@@ -11,6 +11,7 @@
     "transpile-css": "sass --no-source-map --style=compressed styles/main.scss dist/main.css",
     "test": "mocha dist/transpiled/test/**/*.js",
     "build": "rm -rf dist && npm run transpile-js && npm run transpile-css && python3 integrate.py && npm run test",
+    "deploy-css": "npm run transpile-css && python3 integrate.py",
     "serve": "python3 -m http.server --directory dist/www-root 4600"
   },
   "keywords": [],

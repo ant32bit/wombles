@@ -190,6 +190,13 @@ export class RandomAccessMemory {
         return new Uint8Array([...this.memoryArray]);
     }
 
+    public dumpFrame(address: number): Uint8Array {
+        const start = this.validAddress(address, 0);
+        const end = this.validAddress(address, this.frameSize);
+
+        return this.memoryArray.slice(start, end);
+    }
+
     public dump(): { frames: string, processes: [number, number, number][], heaps: [number, number, number][][] } {
         const frameClusters = Array
             .from(this.frames, c => c.toString(2).padStart(32, '0'))
@@ -335,3 +342,4 @@ export class Memory8bitResolver extends VariableMemoryResolver {
         super(pointer, 1);
     }
 }
+

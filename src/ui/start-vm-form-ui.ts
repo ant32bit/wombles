@@ -33,7 +33,7 @@ export class StartVMFormUI {
             const data = new FormData(event.target as HTMLFormElement);
             const initialWomble = data.get('initial-womble')!.toString();
             const memorySizeInBits = parseInt(data.get('memory-size')!.toString());
-            const programSizeInBits = parseInt(data.get('program-size')!.toString());
+            const programSizeInBits = parseInt(data.get('process-size')!.toString());
 
             this.submitHandler({initialWomble, memorySizeInBits, programSizeInBits});
         }).bind(this);

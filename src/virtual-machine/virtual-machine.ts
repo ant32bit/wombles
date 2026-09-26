@@ -5,55 +5,39 @@ import { TickCompletedEvent, TickListener } from '../events';
 
 const SystemProcess: number = 1;
 
-enum VMState {
-    Stopped,
-    Paused,
-    Running,
-}
-
-
-
 export class VirtualMachine {
 
     private systemProcesses: IProcessDefinition[] = [];
 
     private processor: CentralProcessingUnit;
     private memory: RandomAccessMemory;
-    private state: VMState = VMState.Stopped;
+    private execution?: Promise<void>;
     private ticks: number = 0;
     private tickListener?: TickListener;
 
     constructor(processor: CentralProcessingUnit, memory: RandomAccessMemory) {
         this.processor = processor;
         this.memory = memory;
+        this.initialised = false;
     }
 
-    public start(callback?: TickListener) {
-        if (callback)
-            this.tickListener = callback;
-
-        if (this.state === VMState.Running)
-            return;
-
-        if (this.state === VMState.Stopped) {
-            for (const process of this.systemProcesses) {
-                this.processor.startProcess(SystemProcess, process.processId);
-            }
-        }
-
-        this.state = VMState.Running;
-        setTimeout(this.run.bind(this), 0);
+    public setTickListener(callback: TickListener) {
+        this.tickListener = callback;
     }
 
-    public pause() {
-        if (this.state === VMState.Running)
-            this.state = VMState.Paused;
+    public start(): void {
+        this.run();
+    }
+
+    public async step(): Promise<void> {
+        this.run(false);
+        await this.kill();
 
         return;
     }
 
-    public stop() {
-        this.state = VMState.Stopped;
+    public async pause(): Promise<void> {
+        await this.kill();
     }
 
     public addProgram(instructions: number[]) {
@@ -70,24 +54,63 @@ export class VirtualMachine {
         }
     }
 
-    private run() {
-        if (this.state != VMState.Running)
+    public dumpProcess(processId: number): [IProcessDefinition, Uint8Array] | undefined {
+        const definition = this.processor.getProcess(processId);
+        if (!definition)
+            return undefined;
+
+        const frame = this.memory.dumpFrame(definition.address);
+        return [definition, frame];
+    }
+
+    /////// low level execution ///////
+
+    private initialised: boolean = false;
+    private killFlag: boolean = false;
+
+    private init(): void {
+        if (!this.initialised)
+            for (const process of this.systemProcesses) {
+                this.processor.startProcess(SystemProcess, process.processId);
+            }
+        this.initialised = true;
+    }
+
+    private run(loop: boolean = true): void {
+        this.init();
+        this.killFlag = !loop;
+
+        if (this.execution)
             return;
 
+        this.execution = new Promise<void>(
+            ((resolve: () => void) => this._run(resolve)).bind(this));
+    }
+
+    private async kill() {
+        if (!this.execution)
+            return;
+
+        this.killFlag = true;
+        await this.execution;
+        this.execution = undefined;
+    }
+
+    private _run(resolve: () => void) {
         this.memory.startNewSession();
         this.processor.performTick();
         this.ticks++;
-        setTimeout(this.report.bind(this), 0);
-    }
 
-    private report() {
         const tick = this.ticks;
-        const programs = this.processor.count();
+        const processes = this.processor.getProcesses();
         const changes = this.memory.popSessionLogs();
 
         if (this.tickListener)
-            this.tickListener(new TickCompletedEvent(tick, programs, changes));
+            this.tickListener(new TickCompletedEvent(tick, processes, changes));
 
-        setTimeout(this.run.bind(this));
+        if (!this.killFlag)
+            setTimeout((() => this._run(resolve)).bind(this), 0);
+        else
+            resolve();
     }
 }

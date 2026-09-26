@@ -1,0 +1,106 @@
+#processes-display {
+    display: flex;
+
+    ul {
+        display: block;
+        flex: 1;
+    }
+
+    #processes-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: block;
+            background-color: #888;
+            border-radius: 4px;
+            margin: 10px;
+            padding: 5px;
+
+            &.selected {
+                background-color: #BBB;
+            }
+
+            .process-id {
+                margin-left: 5px;
+            }
+        }
+    }
+
+    #process-registers {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: block;
+            background-color: #888;
+            border-radius: 4px;
+            width: 275px;
+            margin: 10px;
+            padding: 5px;
+
+            .title {
+                display: inline-block;
+                font-family: monospace;
+                text-align: center;
+
+                border-radius: 4px;
+                padding: 3px;
+                width: 30px;
+
+                &.data-register {
+                    background-color: #a8a;
+                }
+
+                &.interrupt-register {
+                    background-color: #aa8;
+                }
+
+                &.jumpback-register {
+                    background-color: #8aa;
+                }
+
+                &.instruction-pointer {
+                    background-color: #8a8;
+                }
+
+                &.stack-pointer {
+                    background-color: #a88;
+                }
+            }
+
+            .hex-value {
+                display: inline-block;
+                font-family: monospace;
+                text-align: center;
+
+                border-radius: 4px;
+                margin-left: 5px;
+                padding: 3px;
+                width: 100px;
+
+                background-color: #AAA;
+            }
+
+            .dec-value {
+                display: inline-block;
+                text-align: right;
+
+                margin-left: 5px;
+                width: 120px;
+            }
+        }
+    }
+
+    #process-code {
+        background-color: #222;
+        color: #aaa;
+        display: block;
+        flex: 2;
+        margin: 0 0 0 10px;
+    }
+}
+
+

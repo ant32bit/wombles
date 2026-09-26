@@ -1,9 +1,11 @@
 import { IEventHandler, IPostable } from "../interfaces";
-import { StartupRequest, StartupResponse, TickCompletedEvent } from "../events";
+import { GetProcessRequest, GetProcessResponse, StartupRequest, StartupResponse, TickCompletedEvent } from "../events";
 
 type RouteMap = {
+    'get-process': { request: GetProcessRequest, response: GetProcessResponse },
     'startup': { request: StartupRequest, response: StartupResponse },
     'start': { request: null, response: boolean },
+    'step': { request: null, response: boolean },
     'pause': { request: null, response: boolean }
 }
 
