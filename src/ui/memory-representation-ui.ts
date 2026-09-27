@@ -60,9 +60,9 @@ export class MemoryRepresentationUI {
 
         for (const state of this.memoryState) {
             const i = state.index;
-            const r = state.tickLastChanged ? 255 - clamp255(t - state.tickLastChanged) : 0;
+            const r = state.tickLastChanged ? 255 - clamp255((t - state.tickLastChanged) * 25) : 0;
             const g = state.value;
-            const b = state.tickLastAccessed ? 255 - clamp255(t - state.tickLastAccessed) : 0;
+            const b = state.tickLastAccessed ? 255 - clamp255((t - state.tickLastAccessed) * 25) : 0;
 
             data[i    ] = r;
             data[i + 1] = g;

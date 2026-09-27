@@ -41,5 +41,9 @@ export class StackPushInstruction implements IInstruction {
         stackValueResolver.resolveSet(memory, stackValue);
         spResolver.resolveSet(memory, stackAddress);
     }
+
+    public description(): string {
+        return `Push the contents of ${this._sourceRegister} onto the stack.`;
+    }
 }
 

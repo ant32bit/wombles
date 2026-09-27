@@ -8,7 +8,8 @@ export class GetProcessRequest {
     }
 }
 
-export type ProcessSnapshot = { processId: number, code: string, registers: number[], stack: number[] }
+export type ProcessSnapshotLineOfCode = { lineNumber: number, value: string, blocks: { type: string, value: string }[], description: string };
+export type ProcessSnapshot = { processId: number, code: { currLine: number, lines: ProcessSnapshotLineOfCode[] }, registers: number[], stack: number[] };
 
 export class GetProcessResponse {
     public static ProcessNotFound: GetProcessResponse = new GetProcessResponse(undefined);

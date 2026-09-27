@@ -45,5 +45,9 @@ export class RightShiftInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, rhs >= 32 ? 0 : lhs >>> rhs);
     }
+
+    public description(): string {
+        return `Right shift $${this._lhsRegister} by $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

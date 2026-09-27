@@ -51,5 +51,9 @@ export class ProcessCreateInstruction implements IInstruction {
         pidResolver.resolveSet(memory, newProcess.processId);
         ipResolver.resolveSet(memory, newProcess.address + ProcessMapping.INSTRUCTIONS_OFFSET);
     }
+
+    public description(): string {
+        return `Request the system to allocate a new process. Store the address at $${this._pointerRegister}, the process ID at $${this._pidRegister} and the IP at $${this._instructionPointerRegister}.`;
+    }
 }
 

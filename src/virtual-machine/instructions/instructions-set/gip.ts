@@ -37,5 +37,9 @@ export class GetInstructionPointerInstruction implements IInstruction {
         const value = ipResolver.resolveGet(memory);
         destResolver.resolveSet(memory, value);
     }
+
+    public description(): string {
+        return `Copy the contents of IP into $${this._destinationRegister}.`;
+    }
 }
 

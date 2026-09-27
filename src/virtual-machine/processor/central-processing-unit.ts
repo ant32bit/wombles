@@ -32,8 +32,8 @@ export class CentralProcessingUnit {
         const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
         const spResolver = process.getRegisterResolver(RegisterType.StackPointer);
 
-        ipResolver.resolveSet(this.memory, processDefinition.address + ProcessMapping.INSTRUCTIONS_OFFSET);
-        spResolver.resolveSet(this.memory, processDefinition.address + this.memory.getFrameSizeInBytes());
+        ipResolver.resolveSet(this.memory, (processDefinition.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET);
+        spResolver.resolveSet(this.memory, (processDefinition.address >>> 0) + this.memory.getFrameSizeInBytes());
 
         this.processes[this.generateProcessKey(processDefinition.processId)] = process;
 
@@ -104,7 +104,7 @@ export class CentralProcessingUnit {
     }
 
     public performTick() {
-        const processes = Object.values(this.processes).filter(p => !p.isKilled());
+        const processes = Object.values(this.processes).filter(p => p.isStarted() && !p.isKilled());
 
         while (this.triggeredInterrupts.length > 0) {
             const interrupt = this.triggeredInterrupts.shift()!;

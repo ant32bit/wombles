@@ -44,4 +44,8 @@ export class BinaryAndInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, (lhs & rhs) >>> 0);
     }
+
+    public description(): string {
+        return `Binary AND $${this._lhsRegister} and $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }

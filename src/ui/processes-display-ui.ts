@@ -27,7 +27,7 @@ export class ProcessesDisplayUI {
     private main: HTMLDivElement;
     private processesList: HTMLUListElement;
     private registersList: HTMLUListElement;
-    private code: HTMLPreElement;
+    private code: HTMLUListElement;
 
     private registers: IRegister[];
     private currentlyLoadedProcessses: CurrentlyLoadedProcess[];
@@ -40,7 +40,7 @@ export class ProcessesDisplayUI {
         this.main = elementProvider.getElementById('processes-display') as HTMLDivElement;
         this.processesList = elementProvider.getElementById('processes-list') as HTMLUListElement;
         this.registersList = elementProvider.getElementById('process-registers') as HTMLUListElement;
-        this.code = elementProvider.getElementById('code-display') as HTMLPreElement;
+        this.code = elementProvider.getElementById('process-code') as HTMLUListElement;
 
         this.elementProvider = elementProvider;
         this.processSnapshotProvider = processSnapshotProvider;
@@ -71,7 +71,7 @@ export class ProcessesDisplayUI {
             return { type, index, hexEl, decEl }
         }
 
-        for (let i = 1; i <= 15; i++) {
+        for (let i = 0; i <= 15; i++) {
             this.registers.push(createIRegister(RegisterType.Data, i));
         }
 
@@ -85,6 +85,9 @@ export class ProcessesDisplayUI {
 
         this.registers.push(createIRegister(RegisterType.InstructionPointer, 0));
         this.registers.push(createIRegister(RegisterType.StackPointer, 0));
+
+        this.registers[0].decEl.innerText = "0";
+        this.registers[0].hexEl.innerText = "0x00000000";
     }
 
     public update(tickDetails: TickCompletedEvent): void {
@@ -120,24 +123,65 @@ export class ProcessesDisplayUI {
 
         const processIdData = processId.toString();
         for (const element of this.processesList.children) {
-            if ((element as HTMLElement)?.dataset.processId || "0" === processIdData)
+            if (((element as HTMLElement)?.dataset.processId || "0") === processIdData)
                 element.classList.add('selected');
             else
                 element.classList.remove('selected');
         }
 
         for (let i = 0; i < processSnapshot.registers.length; i++) {
-            const register = this.registers[i];
+            const register = this.registers[i + 1];
             const value = processSnapshot.registers[i];
             register.decEl.innerText = value.toString();
             register.hexEl.innerText = '0x' + (value >>> 0).toString(16).toUpperCase().padStart(8, '0');
         }
 
         this.selectedProcessId = processId;
-        this.code.innerText = processSnapshot.code;
+        this.createCodeBlock(processSnapshot);
 
         this.code.classList.remove('hidden');
         this.registersList.classList.remove('hidden');
+    }
+
+    private createCodeBlock(snapshot: ProcessSnapshot) {
+        const pointedLineNumber = snapshot.code.currLine;
+
+        const lines: HTMLLIElement[] = [];
+
+        for (const line of snapshot.code.lines) {
+            const lineEl = this.elementProvider.createElement('li');
+            lineEl.title = line.description;
+
+            const linePointerEl = this.elementProvider.createElement('span');
+            linePointerEl.classList.add('line-pointer');
+            if (line.lineNumber === pointedLineNumber) {
+                const lineCursorEl = this.elementProvider.createElement('i');
+                lineCursorEl.classList.add('fa-solid', 'fa-caret-right');
+                linePointerEl.appendChild(lineCursorEl);
+            }
+            lineEl.appendChild(linePointerEl);
+
+            const lineNumberEl = this.elementProvider.createElement('span');
+            lineNumberEl.classList.add('line-number');
+            lineNumberEl.innerText = line.lineNumber.toString();
+            lineEl.appendChild(lineNumberEl);
+
+            const codeValueEl = this.elementProvider.createElement('span');
+            codeValueEl.classList.add('code-value');
+            codeValueEl.innerText = line.value;
+            lineEl.appendChild(codeValueEl);
+
+            for (const block of line.blocks) {
+                const blockEl = this.elementProvider.createElement('span');
+                blockEl.classList.add('code-block', block.type);
+                blockEl.innerText = block.value;
+                lineEl.appendChild(blockEl);
+            }
+
+            lines.push(lineEl);
+        }
+
+        this.code.replaceChildren(...lines);
     }
 
     private createProcessElement(process: CurrentlyLoadedProcess): HTMLLIElement {
@@ -170,5 +214,7 @@ export class ProcessesDisplayUI {
 
         return processNode;
     }
+
+
 }
 

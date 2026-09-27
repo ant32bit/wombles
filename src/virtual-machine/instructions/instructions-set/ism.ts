@@ -39,5 +39,9 @@ export class ImmediateSetMemoryInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, this._immediateValue);
     }
+
+    public description(): string {
+        return `Set the contents of the memory address in $${this._destinationPointerRegister} to ${this._immediateValue}`;
+    }
 }
 

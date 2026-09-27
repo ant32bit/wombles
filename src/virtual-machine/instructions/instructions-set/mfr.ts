@@ -39,5 +39,9 @@ export class MemoryFreeInstruction implements IInstruction {
 
         memory.freeHeap(processId, address);
     }
+
+    public description(): string {
+        return `Free the allocated memory at the address in $${this._pointerRegister}.`;
+    }
 }
 

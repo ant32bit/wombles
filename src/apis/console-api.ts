@@ -1,6 +1,6 @@
 import { IEventHandler, IPostable } from '../interfaces';
 import { EventManager } from './event-manager';
-import { GetProcessRequest, GetProcessResponse, StartupRequest, StartupResponse } from '../events';
+import { GetProcessRequest, GetProcessResponse, StartupRequest, StartupResponse, ProcessSnapshotLineOfCode } from '../events';
 import { VirtualMachine } from '../virtual-machine/virtual-machine';
 import { RandomAccessMemory } from '../virtual-machine/memory';
 import { CentralProcessingUnit, ProcessMapping } from '../virtual-machine/processor';
@@ -55,21 +55,33 @@ export class ConsoleAPI {
         else
             stackOffset = undefined;
 
-        let code: string = "";
+
+        const currLine: number = ((registers[registers.length - 2] - def.address - ProcessMapping.INSTRUCTIONS_OFFSET) >>> 1) + 1;
+
+        let code: { currLine: number, lines: ProcessSnapshotLineOfCode[] } = { currLine, lines: [] };
 
         const codeStart = ProcessMapping.INSTRUCTIONS_OFFSET;
-        const codeEnd = (stackOffset ?? frame.length) - ProcessMapping.INSTRUCTIONS_OFFSET;
+        const codeEnd = (stackOffset ?? frame.length);
 
         const instructions: number[] = [];
         for (let offset = codeStart; offset < codeEnd; offset += 2) {
             instructions.push(pack(offset, 2));
         }
-        code = decompile(instructions);
+        const decompiled = decompile(instructions);
+
+        for (const line of decompiled) {
+            code.lines.push({
+                lineNumber: line.lineNumber,
+                value: line.value,
+                blocks: splitDecodedLine(line.instruction.decode()),
+                description: line.instruction.description()
+            });
+        }
+
         return new GetProcessResponse({ processId: request.processId, code, registers, stack });
     }
 
     private onStartup(request: StartupRequest): StartupResponse {
-
         let memory: RandomAccessMemory | null = null;
         let error: string | null = null;
         try {
@@ -115,4 +127,29 @@ export class ConsoleAPI {
         await this.virtualMachinePointer.instance!.pause();
         return true;
     }
+}
+
+function splitDecodedLine(line: string): { type: string, value: string }[] {
+    const values: { type: string, value: string }[] = [];
+
+    values.push({ type: 'i', value: line.substring(0,3) });
+
+    if (line.length === 3)
+        return values;
+
+    let curr: { type: string, value: string } = { type: 's', value: ' ' };
+    const chars = line.substring(4).split('');
+    const numbers = '0123456789'.split('');
+
+    for (const char of chars) {
+        const type = char in numbers ? 'v' : 's';
+        if (type !== curr.type) {
+            values.push(curr);
+            curr = { type, value: '' }
+        }
+        curr.value += char;
+    }
+
+    values.push(curr);
+    return values;
 }

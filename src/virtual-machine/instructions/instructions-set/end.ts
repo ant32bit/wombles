@@ -37,5 +37,9 @@ export class ExitInstruction implements IInstruction {
         const me = process.getProcessDefinition().processId;
         process.os.kill(me);
     }
+
+    public description(): string {
+        return `End the process with a ${this._exitCode} exit code.`
+    }
 }
 

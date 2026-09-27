@@ -19,7 +19,7 @@ export class InternalAPI {
 
     public async startup(initialWomble: string, memorySize: number, programSize: number): Promise<Uint8Array> {
         const response = await this.eventManager.request('startup', new StartupRequest(initialWomble, memorySize, programSize));
-        if (response.memory == null)
+        if (!response.memory || response.errors)
             throw new Error(response.errors || "unknown error");
 
         return response.memory;

@@ -44,5 +44,9 @@ export class MemoryRequestInstruction implements IInstruction {
 
         pointerResolver.resolveSet(memory, address);
     }
+
+    public description(): string {
+        return `Request size ${this._sizeRegister} of memory to be allocated and store the address in $${this._pointerRegister}.`;
+    }
 }
 

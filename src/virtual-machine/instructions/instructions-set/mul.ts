@@ -44,5 +44,9 @@ export class MultiplicationInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, Math.floor(lhs * rhs));
     }
+
+    public description(): string {
+        return `Multiply $${this._lhsRegister} and $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

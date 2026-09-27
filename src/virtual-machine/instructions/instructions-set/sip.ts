@@ -37,5 +37,9 @@ export class SetInstructionPointerInstruction implements IInstruction {
         const value = srcResolver.resolveGet(memory);
         ipResolver.resolveSet(memory, value);
     }
+
+    public description(): string {
+        return `Set IP to the contents of $${this._sourceRegister}.`;
+    }
 }
 

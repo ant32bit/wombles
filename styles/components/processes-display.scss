@@ -1,21 +1,23 @@
 #processes-display {
     display: flex;
+    margin: 10px;
+    height: 600px;
 
     ul {
         display: block;
-        flex: 1;
     }
 
     #processes-list {
         list-style: none;
         margin: 0;
         padding: 0;
+        flex: 1;
 
         li {
             display: block;
             background-color: #888;
             border-radius: 4px;
-            margin: 10px;
+            margin: 0 10px 10px 0;
             padding: 5px;
 
             &.selected {
@@ -26,20 +28,24 @@
                 margin-left: 5px;
             }
         }
+        height: 600px;
+        overflow-y: scroll;
     }
 
     #process-registers {
         list-style: none;
         margin: 0;
         padding: 0;
+        flex: 3;
 
         li {
-            display: block;
+            display: inline-block;
             background-color: #888;
             border-radius: 4px;
-            width: 275px;
-            margin: 10px;
+            width: calc(50% - 15px);
+            margin: 0 5px 5px 0;
             padding: 5px;
+            font-size: 12px;
 
             .title {
                 display: inline-block;
@@ -47,8 +53,8 @@
                 text-align: center;
 
                 border-radius: 4px;
-                padding: 3px;
-                width: 30px;
+                padding: 3px 0;
+                width: 25px;
 
                 &.data-register {
                     background-color: #a8a;
@@ -78,8 +84,9 @@
 
                 border-radius: 4px;
                 margin-left: 5px;
-                padding: 3px;
-                width: 100px;
+                padding: 3px 0;
+                width: 80px;
+                background-color: #aaa;
 
                 background-color: #AAA;
             }
@@ -89,17 +96,72 @@
                 text-align: right;
 
                 margin-left: 5px;
-                width: 120px;
+                width: calc(100% - 120px);
             }
         }
     }
 
     #process-code {
-        background-color: #222;
-        color: #aaa;
+        list-style: none;
         display: block;
         flex: 2;
         margin: 0 0 0 10px;
+        height: 600px;
+        overflow-y: scroll;
+
+        li {
+            display: block;
+            color: #888;
+
+            &:hover {
+                background-color: #333;
+            }
+
+            .line-pointer {
+                display: inline-block;
+                width: 20px;
+                user-select: none;
+            }
+
+            .line-number {
+                text-align: right;
+                color: #666;
+                display: inline-block;
+                width: 30px;
+                border-left: solid 1px #333;
+                padding-left: 5px;
+                margin-left: 5px;
+                user-select: none;
+            }
+
+            .code-value {
+                color: #888;
+                font-family: monospace;
+                border-left: solid 1px #333;
+                padding-left: 5px;
+                margin-left: 5px;
+                user-select: none;
+            }
+
+            .code-block {
+                font-family: monospace;
+
+                &.i {
+                    color: #8A8;
+                    border-left: solid 1px #333;
+                    padding-left: 5px;
+                    margin-left: 5px;
+                }
+
+                &.s {
+                    color: #888;
+                }
+
+                &.v {
+                    color: #A88;
+                }
+            }
+        }
     }
 }
 

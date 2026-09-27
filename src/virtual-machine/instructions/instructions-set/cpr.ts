@@ -39,5 +39,9 @@ export class CopyRegisterInstruction implements IInstruction {
         const value = srcResolver.resolveGet(memory);
         destResolver.resolveSet(memory, value);
     }
+
+    public description(): string {
+        return `Copy contents of $${this._sourceRegister} into $${this._destinationRegister}.`;
+    }
 }
 

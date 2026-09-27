@@ -46,5 +46,9 @@ export class ModulusInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, modulus);
     }
+
+    public description(): string {
+        return `Mudulus of $${this._lhsRegister} by $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

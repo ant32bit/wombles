@@ -36,5 +36,9 @@ export class ExecuteInterruptInstruction implements IInstruction {
 
         process.os.interrupt(this._interruptCode, value);
     }
+
+    public description(): string {
+        return `Send an interrupt ${this._interruptCode} to the system.`;
+    }
 }
 

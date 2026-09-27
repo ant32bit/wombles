@@ -33,9 +33,12 @@ export function compile(code: string): number[] {
     return instructions.map(instruction => instruction.encode());
 }
 
-export function decompile(instructions: number[]): string {
-    const lines: string[] = [];
+export type LineOfCode = { lineNumber: number, value: string, instruction: IInstruction }
 
+export function decompile(instructions: number[]): LineOfCode[] {
+    const lines: LineOfCode[] = [];
+
+    let lineNumber = 0;
     let zeros: number = 0;
     for (const rawInstruction of instructions) {
         if (rawInstruction === 0) {
@@ -44,14 +47,21 @@ export function decompile(instructions: number[]): string {
         }
 
         while (zeros > 0) {
-            lines.push('nop #0000');
+            lineNumber++;
+            lines.push({
+                lineNumber,
+                value: '0000',
+                instruction: new NoOpInstruction()
+            });
             zeros--;
         }
 
-        const comment = ' #' + rawInstruction.toString(16).toUpperCase().padStart(4, '0');
-        const instruction = InstructionDecoder.decode(rawInstruction)?.decode() || 'nop';
-        lines.push(instruction + comment);
+        lineNumber++;
+        const value = rawInstruction.toString(16).toUpperCase().padStart(4, '0');
+        const instruction = InstructionDecoder.decode(rawInstruction) ?? new NoOpInstruction();
+
+        lines.push({ lineNumber, value, instruction });
     }
 
-    return lines.join('\n');
+    return lines;
 }

@@ -37,6 +37,10 @@ export class BeginInterruptInstruction implements IInstruction {
         irp.resolveSet(memory, ipValue + 2);
     }
 
+    public description(): string {
+        return `Mark the beginning of code executed when interrupt ${this._interruptCode} is triggered.`
+    }
+
     public getInterruptCode(): number {
         return this._interruptCode;
     }

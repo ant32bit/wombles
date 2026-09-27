@@ -38,5 +38,10 @@ export class ImmediateSetRegisterInstruction implements IInstruction {
         const destResolver = process.getRegisterResolver(RegisterType.Data, this._destinationRegister);
         destResolver.resolveSetByte(memory, this._destinationIndex, this._immediateValue);
     }
+
+    public description(): string {
+        const index = ['1st','2nd','3rd','4th'][this._destinationIndex];
+        return `Set the contents of the ${index} byte of $${this._destinationRegister} to ${this._immediateValue}.`;
+    }
 }
 
