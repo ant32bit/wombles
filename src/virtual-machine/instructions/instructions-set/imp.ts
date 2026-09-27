@@ -37,5 +37,9 @@ export class IncrementMemoryPointerInstruction implements IInstruction {
         const value = resolver.resolveGet(memory);
         resolver.resolveSet(memory, value + this._valueSize);
     }
+
+    public description(): string {
+        return `Increment a memory address in $${this._pointerRegister} by one item of size ${this._valueSize}.`;
+    }
 }
 

@@ -44,5 +44,9 @@ export class DivisionInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, Math.floor(lhs / rhs));
     }
+
+    public description(): string {
+        return `Divide $${this._lhsRegister} by $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

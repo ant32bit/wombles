@@ -45,5 +45,9 @@ export class CopyMemoryInstruction implements IInstruction {
         const value = srcResolver.resolveGet(memory);
         destResolver.resolveSet(memory, value);
     }
+
+    public description(): string {
+        return `Copy memory at address in $${this._sourcePointerRegister} into address in $${this._destinationPointerRegister}.`
+    }
 }
 

@@ -36,5 +36,9 @@ export class ProcessStartInstruction implements IInstruction {
 
         process.os.start(pid);
     }
+
+    public description(): string {
+        return `Start the process with process ID stored in $${this._pidRegister}`;
+    }
 }
 

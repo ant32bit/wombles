@@ -40,5 +40,9 @@ export class EndOfInterruptInstruction implements IInstruction {
         ipResolver.resolveSet(memory, address);
         jResolver.resolveSet(memory, 0);
     }
+
+    public description(): string {
+        return `Mark the end of code executed during interrupt ${this._interruptCode}.`;
+    }
 }
 

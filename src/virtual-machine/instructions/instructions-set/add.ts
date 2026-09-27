@@ -44,4 +44,8 @@ export class AdditionInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, lhs + rhs);
     }
+
+    public description(): string {
+        return `Add $${this._lhsRegister} and $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }

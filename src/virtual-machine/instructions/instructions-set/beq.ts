@@ -50,4 +50,8 @@ export class BranchEqualInstruction implements IInstruction {
             ipResolver.resolveSet(memory, ip + (offset * 2));
         }
     }
+
+    public description(): string {
+        return `If $${this._lhsRegister} = $${this._rhsRegister} jump to the instruction $${this._offsetRegister} away.`
+    }
 }

@@ -42,5 +42,9 @@ export class StackPopInstruction implements IInstruction {
         destResolver.resolveSet(memory, stackValue);
         spResolver.resolveSet(memory, stackAddress + 4);
     }
+
+    public description(): string {
+        return `Pop a value from the stack and store it in ${this._destinationRegister}.`;
+    }
 }
 

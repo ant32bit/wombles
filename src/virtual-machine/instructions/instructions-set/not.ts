@@ -40,5 +40,9 @@ export class LogicalNotInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, !src ? 1 : 0);
     }
+
+    public description(): string {
+        return `Logical NOT $${this._sourceRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

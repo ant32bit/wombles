@@ -40,5 +40,9 @@ export class TestIfFalseInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, test === 0 ? 1 : 0);
     }
+
+    public description(): string {
+        return `Test that $${this._testRegister} is false and store the result in $${this._destinationRegister}.`
+    }
 }
 

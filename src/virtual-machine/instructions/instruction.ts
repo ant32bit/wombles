@@ -5,4 +5,5 @@ export interface IInstruction {
     decode(): string;
     encode(): number;
     evaluate(memory: RandomAccessMemory, process: Process): void;
+    description(): string;
 }

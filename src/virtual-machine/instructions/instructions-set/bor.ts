@@ -34,8 +34,6 @@ export class BinaryOrInstruction implements IInstruction {
         return pack(BinaryOrInstruction.HEAD, BinaryOrInstruction.PACK, args);
     }
 
-
-
     public evaluate(memory: RandomAccessMemory, process: Process): void {
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
         const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
@@ -45,5 +43,9 @@ export class BinaryOrInstruction implements IInstruction {
         const rhs = rhsResolver.resolveGet(memory);
 
         destResolver.resolveSet(memory, (lhs | rhs) >>> 0);
+    }
+
+    public description(): string {
+        return `Binary OR $${this._lhsRegister} and $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
     }
 }

@@ -1,5 +1,5 @@
 import { InternalAPI } from './apis/internal-api';
-import { MemoryRepresentationUI, SnapshotDisplayUI, StartVMFormUI, VirtualMachineUI } from './ui';
+import { MemoryRepresentationUI, ProcessesDisplayUI, SnapshotDisplayUI, StartVMFormUI, VirtualMachineUI } from './ui';
 
 window.document.addEventListener('DOMContentLoaded', main);
 
@@ -19,13 +19,30 @@ async function main() {
         display.show(true);
     });
 
+    const processes = new ProcessesDisplayUI(document, api.getProcessSnapshot.bind(api));
+
     api.addTickListener((event) => {
         display.update(event);
         memory?.update(event);
+        processes.update(event);
     });
 
-    display.onstart(() => { api.start(); });
-    display.onpause(() => { api.pause(); });
+    display.onstart(() => {
+        api.start();
+        processes.show(false);
+    });
+
+    display.onstep(() => {
+        api
+            .step()
+            .then(() => processes.show(true));
+    });
+
+    display.onpause(() => {
+        api
+            .pause()
+            .then(() => processes.show(true));
+    });
 
     form.enable(true);
 }

@@ -40,4 +40,8 @@ export class BinaryNotInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, (~src) >>> 0);
     }
+
+    public description(): string {
+        return `Binary NOT $${this._sourceRegister} and store the result in $${this._destinationRegister}.`
+    }
 }

@@ -45,5 +45,9 @@ export class SubtractionInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, lhs - rhs);
     }
+
+    public description(): string {
+        return `Subtract $${this._rhsRegister} from $${this._lhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

@@ -44,5 +44,10 @@ export class StoreToMemoryInstruction implements IInstruction {
         const value = srcRegResolver.resolveGetByte(memory, this._sourceIndex);
         destResolver.resolveSet(memory, value);
     }
+
+    public description(): string {
+        const index = ['1st','2nd','3rd','4th'][this._sourceIndex];
+        return `Set the memory address in $${this._destinationPointerRegister} to the contents of the ${index} byte of $${this._sourceRegister}.`;
+    }
 }
 

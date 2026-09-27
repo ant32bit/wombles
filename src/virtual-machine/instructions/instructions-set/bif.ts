@@ -46,4 +46,8 @@ export class BranchIfFalseInstruction implements IInstruction {
             ipResolver.resolveSet(memory, ip + (offset * 2));
         }
     }
+
+    public description(): string {
+        return `If $${this._testRegister} is false jump to the instruction $${this._offsetRegister} away.`
+    }
 }

@@ -44,5 +44,10 @@ export class LoadFromMemoryInstruction implements IInstruction {
         const value = srcResolver.resolveGet(memory);
         destResolver.resolveSetByte(memory, this._destinationIndex, value);
     }
+
+    public description(): string {
+        const index = ['1st','2nd','3rd','4th'][this._destinationIndex];
+        return `Set the contents of the ${index} byte of $${this._destinationRegister} to the value at the memory address in $${this._sourcePointerRegister}.`;
+    }
 }
 

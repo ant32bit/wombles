@@ -23,6 +23,7 @@ export class VirtualMachineUI {
         eventHandler.addEventListener('message', startedListener);
 
         const iframe = elementProvider.createElement('iframe');
+        iframe.classList.add('hidden');
         iframe.src = './internal.html';
         iframe.style = 'display: none';
         elementProvider.body.appendChild(iframe);

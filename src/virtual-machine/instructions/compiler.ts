@@ -1,4 +1,4 @@
-import { InstructionEncoder, IInstruction, InvalidLineError, NoOpInstruction } from '.';
+import { InstructionEncoder, InstructionDecoder, IInstruction, InvalidLineError, NoOpInstruction } from '.';
 
 export function compile(code: string): number[] {
     const instructions: IInstruction[] = [];
@@ -31,4 +31,37 @@ export function compile(code: string): number[] {
         throw new Error(errors.join('\n'));
 
     return instructions.map(instruction => instruction.encode());
+}
+
+export type LineOfCode = { lineNumber: number, value: string, instruction: IInstruction }
+
+export function decompile(instructions: number[]): LineOfCode[] {
+    const lines: LineOfCode[] = [];
+
+    let lineNumber = 0;
+    let zeros: number = 0;
+    for (const rawInstruction of instructions) {
+        if (rawInstruction === 0) {
+            zeros++;
+            continue;
+        }
+
+        while (zeros > 0) {
+            lineNumber++;
+            lines.push({
+                lineNumber,
+                value: '0000',
+                instruction: new NoOpInstruction()
+            });
+            zeros--;
+        }
+
+        lineNumber++;
+        const value = rawInstruction.toString(16).toUpperCase().padStart(4, '0');
+        const instruction = InstructionDecoder.decode(rawInstruction) ?? new NoOpInstruction();
+
+        lines.push({ lineNumber, value, instruction });
+    }
+
+    return lines;
 }

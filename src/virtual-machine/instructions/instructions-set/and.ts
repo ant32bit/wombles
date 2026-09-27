@@ -44,4 +44,8 @@ export class LogicalAndInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, lhs && rhs ? 1 : 0);
     }
+
+    public description(): string {
+        return `Logical AND $${this._lhsRegister} and $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }

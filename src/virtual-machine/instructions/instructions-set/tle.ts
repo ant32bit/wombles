@@ -44,5 +44,9 @@ export class TestLessOrEqualInstruction implements IInstruction {
 
         destResolver.resolveSet(memory, lhs <= rhs ? 1 : 0);
     }
+
+    public description(): string {
+        return `Test that $${this._lhsRegister} ≤ $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
+    }
 }
 

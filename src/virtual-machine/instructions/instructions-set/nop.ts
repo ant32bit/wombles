@@ -25,5 +25,9 @@ export class NoOpInstruction implements IInstruction {
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void { }
+
+    public description(): string {
+        return `No-op.`
+    }
 }
 

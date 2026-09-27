@@ -34,8 +34,6 @@ export class BinaryExclusiveOrInstruction implements IInstruction {
         return pack(BinaryExclusiveOrInstruction.HEAD, BinaryExclusiveOrInstruction.PACK, args);
     }
 
-
-
     public evaluate(memory: RandomAccessMemory, process: Process): void {
         const lhsResolver = process.getRegisterResolver(RegisterType.Data, this._lhsRegister);
         const rhsResolver = process.getRegisterResolver(RegisterType.Data, this._rhsRegister);
@@ -45,6 +43,10 @@ export class BinaryExclusiveOrInstruction implements IInstruction {
         const rhs = rhsResolver.resolveGet(memory);
 
         destResolver.resolveSet(memory, (lhs ^ rhs) >>> 0);
+    }
+
+    public description(): string {
+        return `Binary XOR $${this._lhsRegister} and $${this._rhsRegister} and store the result in $${this._destinationRegister}.`
     }
 }
 
