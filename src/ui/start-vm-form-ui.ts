@@ -64,18 +64,28 @@ cpr $12, $13
 
 # set the jumpback register $7 to -10
 cpr $0, $7
-set $7[3], 10
+set $7[3], 8
 sub $0, $7, $1
 cpr $1, $7
 
-# set the instructions size register $8 to 892
+# copy SP into $8 (the end of the womble space)
 cpr $0, $8
-set $8[3], 48
+set $8[3], 1
+sub $12, $8, $1
+lfm $1, $9[3]
+sub $1, $8, $1
+lfm $1, $9[2]
+sub $1, $8, $1
+lfm $1, $9[1]
+sub $1, $8, $1
+lfm $1, $9[0]
+cpr $9, $8
 
 # create a process and set the pid to $9 and the ip to $10
 pcr $1, $2, $3
 cpr $2, $9
 cpr $3, $10
+cpr $7, $2   # move jump into $2 so it can used in blt
 
 # set current source byte and current destination byte to $14 and $11
 cpr $13, $14
@@ -92,9 +102,7 @@ imp $13, 2
 imp $10, 2
 
 # loop while current source is less that instruction space
-sub $13, $12, $1
-cpr $7, $2
-blt $1, $8, $2
+blt $13, $8, $2
 
 # start the process
 pst $9
