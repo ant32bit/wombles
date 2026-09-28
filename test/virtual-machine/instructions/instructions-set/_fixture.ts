@@ -12,7 +12,7 @@ export class VirtualMachineFixture {
 
     constructor() {
         this.memory = new RandomAccessMemory(2, 8);
-        this.cpu = new CentralProcessingUnit(this.memory);
+        this.cpu = new CentralProcessingUnit(this.memory, { processLifetime: 10, cpmMutationRate: 0, impMissRate: 0 });
         this.process = this.cpu.createProcess(1)!;
     }
 

@@ -5,9 +5,11 @@ import { BeginInterruptInstruction } from "../../../src/virtual-machine/instruct
 
 describe('central processing unit', () => {
 
+    const noMutationProcessorOptions = { processLifetime: 10, cpmMutationRate: 0, impMissRate: 0 };
+
     it('can create processes', () => {
         const memory = new RandomAccessMemory(2, 8);
-        const cpu = new CentralProcessingUnit(memory);
+        const cpu = new CentralProcessingUnit(memory, noMutationProcessorOptions);
 
         const cpuBeforeCreate = cpu.dump();
 
@@ -22,7 +24,7 @@ describe('central processing unit', () => {
 
     it('can start processes', () => {
         const memory = new RandomAccessMemory(2, 8);
-        const cpu = new CentralProcessingUnit(memory);
+        const cpu = new CentralProcessingUnit(memory, noMutationProcessorOptions);
 
         const def = cpu.createProcess(1);
 
@@ -34,7 +36,7 @@ describe('central processing unit', () => {
 
     it('can kill processes', () => {
         const memory = new RandomAccessMemory(2, 8);
-        const cpu = new CentralProcessingUnit(memory);
+        const cpu = new CentralProcessingUnit(memory, noMutationProcessorOptions);
 
         const def = cpu.createProcess(1);
         cpu.startProcess(1, def!.processId);
@@ -50,7 +52,7 @@ describe('central processing unit', () => {
 
     it('can initialise ip, sp on create', () => {
         const memory = new RandomAccessMemory(2, 8);
-        const cpu = new CentralProcessingUnit(memory);
+        const cpu = new CentralProcessingUnit(memory, noMutationProcessorOptions);
 
         const def = cpu.createProcess(1);
         const cpuAfterCreate = cpu.dump();
@@ -67,7 +69,7 @@ describe('central processing unit', () => {
 
     it('can initialise i, j on start', () => {
         const memory = new RandomAccessMemory(2, 8);
-        const cpu = new CentralProcessingUnit(memory);
+        const cpu = new CentralProcessingUnit(memory, noMutationProcessorOptions);
 
         const def = cpu.createProcess(1);
 

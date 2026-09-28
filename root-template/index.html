@@ -9,38 +9,58 @@
 </head>
 <body>
     <form id="start-params">
-        <label>Initial Womble</label>
+        <label for="initial-womble">Initial Womble</label>
         <textarea id="code" name="initial-womble"></textarea>
-        <div id="memory-params">
-            <div class="param">
-                <label>Memory Capacity</label>
-                <select name="memory-size">
-                    <option value="20" >1 MB</option>
-                    <option value="21">2 MB</option>
-                    <option value="22">4 MB</option>
-                    <option value="23" selected>8 MB</option>
-                    <option value="24">16 MB</option>
-                    <option value="25">32 MB</option>
-                    <option value="26">64 MB</option>
-                </select>
+        <div id="vm-settings">
+            <div id="vm-params">
+                <div class="param-group">
+                    <h4>Memory</h4>
+                    <div class="param">
+                        <label for="memory-size">Memory Capacity</label>
+                        <select name="memory-size">
+                            <option value="20" selected>1 MB</option>
+                            <option value="21">2 MB</option>
+                            <option value="22">4 MB</option>
+                            <option value="23">8 MB</option>
+                            <option value="24">16 MB</option>
+                            <option value="25">32 MB</option>
+                            <option value="26">64 MB</option>
+                        </select>
+                    </div>
+                    <div class="param">
+                        <label for="process-size">Process Size</label>
+                        <select name="process-size">
+                            <option value="8" selected>256 B</option>
+                            <option value="9">512 B</option>
+                            <option value="10">1 kB</option>
+                            <option value="11">2 kB</option>
+                            <option value="12">4 kB</option>
+                            <option value="13">8 kB</option>
+                            <option value="14">16 kB</option>
+                            <option value="15">32 kB</option>
+                            <option value="16">64 kB</option>
+                            <option value="17">128 kB</option>
+                            <option value="18">256 kB</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="param-group">
+                    <h4>Processor Volatility</h4>
+                    <div class="param">
+                        <label for="process-lifetime">Maximum Process Lifetime</label>
+                        <input type="number" name="process-lifetime" min="1" step="1" value="2000"> ticks
+                    </div>
+                    <div class="param">
+                        <label for="cpm-mutation-rate">Bit mutation rate of cpm</label>
+                        <input type="number" name="cpm-mutation-rate" min="0" max="100" step=".1" value="0.1"> %
+                    </div>
+                    <div class="param">
+                        <label for="imp-miss-rate">Miss rate for imp</label>
+                        <input type="number" name="imp-miss-rate" min="0" max="100" step=".1" value="0.1"> %
+                    </div>
+                </div>
             </div>
-            <div class="param">
-                <label>Process Size</label>
-                <select name="process-size">
-                    <option value="8">256 B</option>
-                    <option value="9">512 B</option>
-                    <option value="10" selected>1 kB</option>
-                    <option value="11">2 kB</option>
-                    <option value="12">4 kB</option>
-                    <option value="13">8 kB</option>
-                    <option value="14">16 kB</option>
-                    <option value="15">32 kB</option>
-                    <option value="16">64 kB</option>
-                    <option value="17">128 kB</option>
-                    <option value="18">256 kB</option>
-                </select>
-            </div>
-            <div class="submit">
+            <div id="vm-start">
                 <input type="submit" id="submit" value="Start" disabled>
             </div>
         </div>

@@ -2,18 +2,31 @@ import { IProcessDefinition, Memory16bitResolver, RandomAccessMemory } from "../
 import { ProcessMapping, RegisterType } from "./process-mapping";
 import { ISystemOperations, Process } from "./process";
 import * as Decoder from "../instructions/decoder";
-import { BeginInterruptInstruction } from "../instructions/instructions-set";
+import { BeginInterruptInstruction, ExitInstruction } from "../instructions/instructions-set";
 import { CurrentlyLoadedProcess } from "../../events";
+
+export type ProcessorOptions = {
+    processLifetime: number;
+    cpmMutationRate: number;
+    impMissRate: number;
+}
+
+type ProcessCache = {
+    process: Process;
+    ticks: number;
+}
 
 export class CentralProcessingUnit {
 
-    private processes: {[processKey: string]: Process};
+    private processCaches: {[processKey: string]: ProcessCache};
     private memory: RandomAccessMemory;
+    private processorOptions: ProcessorOptions;
     private triggeredInterrupts: {code: number, value: number}[] = [];
 
-    constructor(memory: RandomAccessMemory) {
+    constructor(memory: RandomAccessMemory, options: ProcessorOptions) {
         this.memory = memory;
-        this.processes = {};
+        this.processCaches = {};
+        this.processorOptions = options;
     }
 
     public createProcess(parentProcessId: number): IProcessDefinition | null {
@@ -28,14 +41,17 @@ export class CentralProcessingUnit {
             interrupt: ((code: number, value: number) => this.queueInterrupt(code, value)).bind(this)
         };
 
-        const process = new Process(processDefinition, authenticatedOperations);
+        const process = new Process(processDefinition, authenticatedOperations, this.processorOptions);
         const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
         const spResolver = process.getRegisterResolver(RegisterType.StackPointer);
 
         ipResolver.resolveSet(this.memory, (processDefinition.address >>> 0) + ProcessMapping.INSTRUCTIONS_OFFSET);
         spResolver.resolveSet(this.memory, (processDefinition.address >>> 0) + this.memory.getFrameSizeInBytes());
 
-        this.processes[this.generateProcessKey(processDefinition.processId)] = process;
+        this.processCaches[this.generateProcessKey(processDefinition.processId)] = {
+            process,
+            ticks: 0
+        };
 
         return {
             processId: processDefinition.processId,
@@ -44,7 +60,7 @@ export class CentralProcessingUnit {
     }
 
     public startProcess(parentProcessId: number, processId: number) {
-        const process = this.processes[this.generateProcessKey(processId)];
+        const process = this.processCaches[this.generateProcessKey(processId)]?.process;
 
         if (process == null)
             return;
@@ -87,13 +103,13 @@ export class CentralProcessingUnit {
         this.memory.freeProcess(processId);
 
         const processKey = this.generateProcessKey(processId);
-        const process = this.processes[processKey];
+        const process = this.processCaches[processKey]?.process;
 
         if (process == null)
             return;
 
         process.kill();
-        delete this.processes[processKey];
+        delete this.processCaches[processKey];
     }
 
     public queueInterrupt(interruptCode: number, interruptValue: number) {
@@ -104,14 +120,15 @@ export class CentralProcessingUnit {
     }
 
     public performTick() {
-        const processes = Object.values(this.processes).filter(p => p.isStarted() && !p.isKilled());
+        const processes = Object.values(this.processCaches).filter(c => c.process.isStarted() && !c.process.isKilled());
 
         while (this.triggeredInterrupts.length > 0) {
             const interrupt = this.triggeredInterrupts.shift()!;
             if (interrupt.code < 0 || interrupt.code > 7)
                 continue;
 
-            for (const process of processes) {
+            for (const cache of processes) {
+                const process = cache.process;
                 const iResolver = process.getRegisterResolver(RegisterType.Interrupt, interrupt.code);
 
                 const interruptStart = iResolver.resolveGet(this.memory);
@@ -138,7 +155,16 @@ export class CentralProcessingUnit {
             }
         }
 
-        for (const process of processes) {const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
+        for (const cache of processes) {
+            const process = cache.process;
+
+            if (cache.ticks > this.processorOptions.processLifetime) {
+                const instruction = new ExitInstruction(1);
+                instruction.evaluate(this.memory, process);
+                continue;
+            }
+
+            const ipResolver = process.getRegisterResolver(RegisterType.InstructionPointer);
             const instructionAddress = ipResolver.resolveGet(this.memory) >>> 0;
             const instructionResolver = new Memory16bitResolver(instructionAddress);
             const instructionRaw = instructionResolver.resolveGet(this.memory);
@@ -149,22 +175,24 @@ export class CentralProcessingUnit {
             const newInstructionAddress = ipResolver.resolveGet(this.memory) >>> 0;
             if (instructionAddress === newInstructionAddress)
                 ipResolver.resolveSet(this.memory, instructionAddress + 2);
+
+            cache.ticks++;
         }
     }
 
     public getProcess(processId: number): IProcessDefinition | undefined {
-        return this.processes[this.generateProcessKey(processId)]?.getProcessDefinition();
+        return this.processCaches[this.generateProcessKey(processId)]?.process.getProcessDefinition();
     }
 
     public getProcesses(): CurrentlyLoadedProcess[] {
         return Object
-            .values(this.processes)
-            .map(p => {
-                const def = p.getProcessDefinition();
+            .values(this.processCaches)
+            .map(c => {
+                const def = c.process.getProcessDefinition();
                 return {
                     processId: def.processId,
                     address: (def.address & 0x7FFFFFFF) >>> 0,
-                    isStarted: p.isStarted()
+                    isStarted: c.process.isStarted()
                 }
             });
     }
@@ -176,7 +204,8 @@ export class CentralProcessingUnit {
             interrupts: []
         };
 
-        for (const process of Object.values(this.processes)) {
+        for (const cache of Object.values(this.processCaches)) {
+            const process = cache.process;
             dump.processes.push(process.dump());
             dump.registers.push(this.dumpRegisters(process));
         }

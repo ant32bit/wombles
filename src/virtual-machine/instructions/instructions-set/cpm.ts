@@ -33,6 +33,13 @@ export class CopyMemoryInstruction implements IInstruction {
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
+
+        let flipMask = 0;
+        const mutationRate = process.options.cpmMutationRate;
+        if (mutationRate > 0 && Math.random() < mutationRate) {
+            flipMask = 1 << Math.ceil(Math.random() * 8);
+        }
+
         const srcRegResolver = process.getRegisterResolver(RegisterType.Data, this._sourcePointerRegister);
         const destRegResolver = process.getRegisterResolver(RegisterType.Data, this._destinationPointerRegister);
 
@@ -42,7 +49,7 @@ export class CopyMemoryInstruction implements IInstruction {
         const srcResolver = new Memory8bitResolver(srcAddress);
         const destResolver = new Memory8bitResolver(destAddress);
 
-        const value = srcResolver.resolveGet(memory);
+        const value = srcResolver.resolveGet(memory) ^ flipMask;
         destResolver.resolveSet(memory, value);
     }
 

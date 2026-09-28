@@ -33,9 +33,15 @@ export class IncrementMemoryPointerInstruction implements IInstruction {
     }
 
     public evaluate(memory: RandomAccessMemory, process: Process): void {
+        let incrementRate = 1;
+        const missRate = process.options.impMissRate;
+        if (missRate > 0 && Math.random() < missRate) {
+            incrementRate = [-1, 1][Math.ceil(Math.random() * 2)];
+        }
+
         const resolver = process.getRegisterResolver(RegisterType.Data, this._pointerRegister);
         const value = resolver.resolveGet(memory);
-        resolver.resolveSet(memory, value + this._valueSize);
+        resolver.resolveSet(memory, value + (incrementRate * this._valueSize));
     }
 
     public description(): string {

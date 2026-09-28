@@ -9,6 +9,11 @@ export interface ISystemOperations {
     interrupt(code: number, value: number): void
 }
 
+export interface IProcessOptions {
+    cpmMutationRate: number;
+    impMissRate: number;
+}
+
 export class Process {
 
     private processId: number;
@@ -18,14 +23,16 @@ export class Process {
     private killed: boolean;
 
     public os: ISystemOperations;
+    public options: IProcessOptions;
 
-    constructor(definition: IProcessDefinition, os: ISystemOperations) {
+    constructor(definition: IProcessDefinition, os: ISystemOperations, options: IProcessOptions) {
         this.processId = definition.processId;
         this.address = definition.address;
         this.running = false;
         this.killed = false;
 
         this.os = os;
+        this.options = options;
     }
 
     public getProcessDefinition(): IProcessDefinition {

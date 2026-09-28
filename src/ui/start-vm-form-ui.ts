@@ -3,7 +3,10 @@ import { IElementProvider } from '../interfaces'
 export type StartVMFormSubmittedEvent = {
     initialWomble: string,
     memorySizeInBits: number,
-    programSizeInBits: number
+    programSizeInBits: number,
+    processLifetime: number,
+    cpmMutationRate: number,
+    impMissRate: number
 };
 
 export type SubmitHandler = (event: StartVMFormSubmittedEvent) => void;
@@ -34,8 +37,11 @@ export class StartVMFormUI {
             const initialWomble = data.get('initial-womble')!.toString();
             const memorySizeInBits = parseInt(data.get('memory-size')!.toString());
             const programSizeInBits = parseInt(data.get('process-size')!.toString());
+            const processLifetime = parseInt(data.get('process-lifetime')!.toString());
+            const cpmMutationRate = parseFloat(data.get('cpm-mutation-rate')!.toString()) / 100;
+            const impMissRate = parseFloat(data.get('imp-miss-rate')!.toString()) / 100;
 
-            this.submitHandler({initialWomble, memorySizeInBits, programSizeInBits});
+            this.submitHandler({initialWomble, memorySizeInBits, programSizeInBits, processLifetime, cpmMutationRate, impMissRate});
         }).bind(this);
 
         this.form = form;

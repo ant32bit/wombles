@@ -86,7 +86,7 @@ export class ConsoleAPI {
         let error: string | null = null;
         try {
             memory = new RandomAccessMemory(request.memorySizeInBits - request.frameSizeInBits, request.frameSizeInBits);
-            const processor = new CentralProcessingUnit(memory);
+            const processor = new CentralProcessingUnit(memory, request);
             const vm = new VirtualMachine(processor, memory);
 
             const program = compile(request.initialWomble);

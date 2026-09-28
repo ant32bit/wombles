@@ -22,17 +22,40 @@
     }
 }
 
-#memory-params {
+#vm-settings {
     display: flex;
-    margin: 10px 0;
+    margin-top: 10px;
+    border-top: solid 1px #333;
+    color: #888;
 
-    .param {
-        display: inline-block;
-        margin-right: 20px;
+    #vm-params {
+        display: flex;
+        flex: 1;
+
+        .param-group {
+            display: inline-block;
+            border: solid 1px #333;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 15px 0 0;
+            flex: 1;
+
+            h4 {
+                display: block;
+                font: 12px sans-serif;
+                margin: 0 0 5px 0;
+                border-bottom: solid 1px #333;
+            }
+
+            .param {
+                display: inline-block;
+                margin-right: 20px;
+            }
+        }
     }
 
-    .submit {
-        flex: 1;
+    #vm-start {
+        margin-top: 10px;
 
         input[type=submit] {
             width: 100px;

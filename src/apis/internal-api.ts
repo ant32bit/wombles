@@ -17,8 +17,14 @@ export class InternalAPI {
         });
     }
 
-    public async startup(initialWomble: string, memorySize: number, programSize: number): Promise<Uint8Array> {
-        const response = await this.eventManager.request('startup', new StartupRequest(initialWomble, memorySize, programSize));
+    public async startup(
+        initialWomble: string,
+        memorySize: number,
+        programSize: number,
+        processLifetime: number,
+        cpmMutationRate: number,
+        impMissRate: number): Promise<Uint8Array> {
+        const response = await this.eventManager.request('startup', new StartupRequest(initialWomble, memorySize, programSize, processLifetime, cpmMutationRate, impMissRate));
         if (!response.memory || response.errors)
             throw new Error(response.errors || "unknown error");
 

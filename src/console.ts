@@ -14,7 +14,7 @@ async function main() {
 
     const api = new InternalAPI(window, vm.postable);
     form.setSubmitHandler(async (ev) => {
-        var initial = await api.startup(ev.initialWomble, ev.memorySizeInBits, ev.programSizeInBits);
+        var initial = await api.startup(ev.initialWomble, ev.memorySizeInBits, ev.programSizeInBits, ev.processLifetime, ev.cpmMutationRate, ev.impMissRate);
         memory = new MemoryRepresentationUI(document, initial, ev.programSizeInBits);
         display.show(true);
     });
