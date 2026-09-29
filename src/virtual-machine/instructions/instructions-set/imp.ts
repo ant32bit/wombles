@@ -36,7 +36,7 @@ export class IncrementMemoryPointerInstruction implements IInstruction {
         let incrementRate = 1;
         const missRate = process.options.impMissRate;
         if (missRate > 0 && Math.random() < missRate) {
-            incrementRate = [-1, 1][Math.ceil(Math.random() * 2)];
+            incrementRate = [-1, 0, 2][Math.ceil(Math.random() * 3)];
         }
 
         const resolver = process.getRegisterResolver(RegisterType.Data, this._pointerRegister);
